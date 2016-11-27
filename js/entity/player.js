@@ -35,7 +35,8 @@ class Player extends Phaser.Sprite {
         this._recoil = 0;
         this._nextFire = 0;
         this._magazine_size = 40;
-        this.ammo = 40;
+        this._total_ammo = 160;
+        this._ammo = 40;
         this._initControl();
         this._initHealth(100);
         this._initCombat();
@@ -47,7 +48,6 @@ class Player extends Phaser.Sprite {
         this._right = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
         this._up = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
         this._down = this.game.input.keyboard.addKey(Phaser.Keyboard.S);
-        this._reloadButton = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
         this._combat_button = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         this._combat_button.onDown.add(this.toggleCombatMode, this);
 
@@ -66,14 +66,14 @@ class Player extends Phaser.Sprite {
             //CombatMode Indicator
             this._combat_marker = this.game.add.sprite(6, 22, 'combatEngaged');
             this._reloadImg = this.game.add.sprite(144, 22, 'reload');
-            this.ammoBox = this.game.add.sprite(774, 6, 'ammoBox');
-            this.ammoCounter = this.game.add.text(800, 10, this.ammo, {
+            this._ammo_Box = this.game.add.sprite(774, 6, 'ammoBox');
+            this._ammo_Counter = this.game.add.text(800, 10, this._ammo, {
                 fill: "#e07723"
             });
-            this.ammoCounter.font = 'Press Start 2P';
-            this.ammoCounter.fontSize = 16;
-            this.ammoCounter.fixedToCamera = true;
-            this.ammoBox.fixedToCamera = true;
+            this._ammo_Counter.font = 'Press Start 2P';
+            this._ammo_Counter.fontSize = 16;
+            this._ammo_Counter.fixedToCamera = true;
+            this._ammo_Box.fixedToCamera = true;
             this._reloadImg.fixedToCamera = true;
             this._combat_marker.fixedToCamera = true;
             this._combat_marker.alpha = 0.0;
@@ -98,15 +98,16 @@ class Player extends Phaser.Sprite {
             this._combat_mode_engaged = false;
             this._combat_marker.alpha = 0.0;
             this._laser_pointer.alpha = 0.0;
-            this.reload();
+            this._reload();
         }
     }
 
-    reload() {
+    _reload() {
+        console.log('Reload Fired');
             // no recoil after reload
             this._recoil = 0;
-            //this.ammo = this.magazine_size;
-            //this.ammo_counter.setText(this.ammo);
+            this._ammo = this.magazine_size;
+            this.ammo_counter.setText(this.ammo);
         }
         // LADDER MODE :
     isOnLadder() {
