@@ -55,7 +55,7 @@ class SimpleLevel extends Phaser.State {
         var enemyArr = this._findObjectsByType('enemy', this._map, 'ObjectLayer');
         //For Each element in array create Enemy Instance
         enemyArr.forEach(function (element) {
-            this.enemy = new Enemy(this.game, element.x, element.y, 'monster', undefined, this.map, 60);
+            this.enemy = new Enemy(this.game, element.x, element.y, 'monster', undefined, this.map, 80);
             //add enemy to enemies array
             this.enemies.add(this.enemy);
         }, this);
@@ -104,15 +104,18 @@ class SimpleLevel extends Phaser.State {
     _fireWeapon(fireRate, damage, recoil) {
         this.bullet;
         this.fireRate = fireRate;
-        if (this.game.time.now > this._nextFire && this.bullets.countDead() > 3) {
+        if (this.game.time.now > this._nextFire && this.bullets.countDead() > 3 && this.player._ammo > 0) {
             this._nextFire = this.game.time.now + this.fireRate;
             this.bullet = this.bullets.getFirstDead();
-            this.bullet.reset(this.player.body.x - 0, this.player.body.y + 32);
+            this.bullet.reset(this.player.body.x, this.player.body.y + 32);
             this.game.camera.shake(0.02, 30);
             this.game.physics.arcade.velocityFromAngle(this.player._laser_pointer.angle, 2000, this.bullet.body.velocity);
             this.bullet.angle = this.player._laser_pointer.angle;
             this.bullet.bringToTop();
             this._damage = damage;
+            this.player._ammo--;
+            //this.player._ammo_Counter.setText(this.player._ammo);
+            console.log(this.player._ammo);
             this.bullets.add(this.bullet);
             if (this.player._laser_pointer.angle < 90 && this.player._laser_pointer.angle > -90) {
                 this.player._recoil -= recoil;
@@ -162,8 +165,8 @@ class SimpleLevel extends Phaser.State {
     update() {
         this._checkCollision();
         //Fire Weapon RateofFire, Damage, Recoil. We eventually need to add , key here. for the bulletsprite.
-        if (this.game.input.activePointer.isDown && this.player._combat_mode_engaged) {
-            this._fireWeapon(90, 16, 12);
+        if (this.game.input.activePointer.isDown && this.player._combat_mode_engaged && this.player._reloading === false) {
+            this._fireWeapon(80, 6, 10);
         }
         this._player_position_update ();
     }

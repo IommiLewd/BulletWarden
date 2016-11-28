@@ -40,6 +40,7 @@ class Player extends Phaser.Sprite {
         this._initControl();
         this._initHealth(100);
         this._initCombat();
+        this._reloading = false;
 
     }
 
@@ -56,7 +57,7 @@ class Player extends Phaser.Sprite {
         //Add Healthbar
         this._health = health;
         this._health_bar = this.game.add.sprite(4, 3, 'healthBar');
-        this._health_pixel = this.game.add.tileSprite(7, 6, 262, 10, 'redPixel')
+        this._health_pixel = this.game.add.tileSprite(7, 6, 262, 10, 'redPixel');
         this._health_bar.bringToTop();
         this._health_pixel.bringToTop();
         this._health_bar.fixedToCamera = true;
@@ -75,6 +76,11 @@ class Player extends Phaser.Sprite {
             this._ammo_Counter.fixedToCamera = true;
             this._ammo_Box.fixedToCamera = true;
             this._reloadImg.fixedToCamera = true;
+            this._reloadImg.alpha = 0.0;
+            this._reloadProgress = this.game.add.tileSprite(244, 25, 26, 10, 'redPixel');
+            this._reloadProgress.fixedToCamera = true;
+        
+            this._reloadProgress.alpha = 0.0;
             this._combat_marker.fixedToCamera = true;
             this._combat_marker.alpha = 0.0;
             //Create Laserpointer
@@ -89,25 +95,42 @@ class Player extends Phaser.Sprite {
         }*/
         // COMBAT MODE :
     toggleCombatMode() {
-
-        if (this._combat_mode_engaged === false) {
+        if (this._combat_mode_engaged === false && this._reloading === false) {
+            this._canClimb = false;
             this._combat_mode_engaged = true;
             this._combat_marker.alpha = 1.0;
             this._laser_pointer.alpha = 0.2;
+            this._combat_mode_engaged = true;
         } else {
-            this._combat_mode_engaged = false;
-            this._combat_marker.alpha = 0.0;
-            this._laser_pointer.alpha = 0.0;
-            this._reload();
+            if (this._reloading === false) {
+                this._reloading = true;
+                this._laser_pointer.alpha = 0.0;
+                this._reload();
+            }
         }
     }
 
     _reload() {
-        console.log('Reload Fired');
-            // no recoil after reload
-            this._recoil = 0;
-            this._ammo = this.magazine_size;
-            this.ammo_counter.setText(this.ammo);
+        this._reloadProgress.alpha = 1.0;
+        this._reloadImg.alpha = 1.0;
+        
+       this._exampleTween = this.game.add.tween(this._reloadProgress).to( { width: 0 }, 1900, 'Linear', true );
+   
+        this.game.time.events.add(Phaser.Timer.SECOND * 2.1, this._reloadComplete, this);
+    }
+
+    _reloadComplete() {
+            //this.game.tweens.remove(this._reloadProgress);
+        this._reloadProgress.width = 26;
+        console.log(this._reloadProgress.width);
+            this._combat_mode_engaged = false;
+            this._ammo = this._magazine_size;
+            this._combat_marker.alpha = 0.0;
+            this._reloadImg.alpha = 0.0;
+            this._reloading = false;
+            this._canClimb = true;
+            this._reloadProgress.alpha = 0.0;
+            this._reloadProgress.width = 26;
         }
         // LADDER MODE :
     isOnLadder() {
@@ -127,6 +150,7 @@ class Player extends Phaser.Sprite {
     update() {
         //on player actions :
         // moving cursor
+        this._ammo_Counter.setText(this._ammo);
         this._health_pixel.width = this._health / 100 * 262;
         this._laser_pointer.rotation = this.game.physics.arcade.angleToPointer(this);
         this._laser_pointer.angle = this._laser_pointer.angle + this._recoil;
