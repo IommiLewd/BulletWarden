@@ -88,6 +88,9 @@ class Player extends Phaser.Sprite {
             this._laser_pointer.anchor.setTo(0.0, 0.0);
             this.addChild(this._laser_pointer);
             this._laser_pointer.alpha = 0.0;
+            //Load waveCounter
+            this.waveCounter = this.game.add.sprite(277, 3, 'waveCounter');
+            this.waveCounter.fixedToCamera = true;
         }
         /*
         _initPhysic(){
@@ -114,9 +117,9 @@ class Player extends Phaser.Sprite {
         this._reloadProgress.alpha = 1.0;
         this._reloadImg.alpha = 1.0;
         
-       this._exampleTween = this.game.add.tween(this._reloadProgress).to( { width: 0 }, 1900, 'Linear', true );
+       this._exampleTween = this.game.add.tween(this._reloadProgress).to( { width: 0 }, 1500, 'Linear', true );
    
-        this.game.time.events.add(Phaser.Timer.SECOND * 2.1, this._reloadComplete, this);
+        this.game.time.events.add(Phaser.Timer.SECOND * 1.6, this._reloadComplete, this);
     }
 
     _reloadComplete() {

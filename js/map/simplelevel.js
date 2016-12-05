@@ -16,6 +16,9 @@ class SimpleLevel extends Phaser.State {
         // private methods :
     _loadLevel() {
             //TODO: load the background : should depend on the level name
+            this.game.canvas.oncontextmenu = function (e) {
+                e.preventDefault();
+            }
             this.background = this.game.add.sprite(0, 0, 'background');
             this.background.fixedToCamera = true;
             this._map = this.add.tilemap('level-1');
@@ -40,14 +43,16 @@ class SimpleLevel extends Phaser.State {
         var playerArr = this._findObjectsByType("player", this._map, 'ObjectLayer');
         this.player = new Player(this.game, playerArr[0].x, playerArr[0].y);
     }
-    
-    _player_position_update (enemy, enemies, player) {
-        var capturedPosition = this.player.body.y; 
-        this.enemies.forEach(function(enemy, enemies, player) {
-        enemy._playerPositionY = capturedPosition;
-        })
-    }
-    //Adding Enemies
+
+    _player_position_update(enemy, enemies, player) {
+            var capturedPosition = this.player.body.y;
+            var capturedPosition2 = this.player.body.x;
+            this.enemies.forEach(function (enemy, enemies, player) {
+                enemy._playerPositionY = capturedPosition;
+                enemy._playerPositionX = capturedPosition2;
+            })
+        }
+        //Adding Enemies
     _addEnemies() {
         //Create Group enemies to handle collisions
         this.enemies = this.add.group();
@@ -60,7 +65,21 @@ class SimpleLevel extends Phaser.State {
             this.enemies.add(this.enemy);
         }, this);
     }
-    //We use this to find and create objects from the json.
+
+    // Beginning monsterspawner here
+    _monster_Spawner() {
+            var spawnArr = this._findObjectsByType('MonsterSpawner', this._map, 'ObjectLayer');
+            //For Each element in array create Enemy Instance
+            spawnArr.forEach(function (element) {
+                for (this.i = 0; this.i < 2; this.i++) {
+                    this.enemy = new Enemy(this.game, element.x, element.y, 'monster', undefined, this.map, 80);
+                }
+                //add enemy to enemies array
+                this.enemies.add(this.enemy);
+            }, this);
+
+        }
+        //We use this to find and create objects from the json.
     _findObjectsByType(targetType, tilemap, layer) {
         var result = [];
         tilemap.objects[layer].forEach(function (element) {
@@ -72,20 +91,18 @@ class SimpleLevel extends Phaser.State {
         return result;
     }
     _player_damage(player, enemy) {
-            if (this.player._health < 1) {
-                this.player._health = 0;
-            } else if (this.time.now > this.biteTimer && this.player._health > 1) {
-                this.game.camera.shake(0.06, 40);
-                this.player._health -= 30;
-                this.biteTimer = this.time.now + 450;
-                if (enemy.body.x < this.player.body.x) {
-                    enemy.body.velocity.x = +180;
-                } else {
-                    enemy.body.velocity.x = -180;
-                }
-            }
+        if (this.player._health < 1) {
+            this.player._health = 0;
+        } else if (this.time.now > this.biteTimer && this.player._health > 1) {
+            this.game.camera.shake(0.06, 40);
+            this.player._health -= 30;
+            this.biteTimer = this.time.now + 450;
+            enemy._enemy_MovementReset();
         }
-        //Initializing Bullets
+        this.game.time.events.add(Phaser.Timer.SECOND * 1, enemy._enemy_MovementReset, enemy);
+    }
+
+    //Initializing Bullets
     _initBullets() {
             this.bullets = this.game.add.group();
             this.bullets.enableBody = true;
@@ -129,11 +146,8 @@ class SimpleLevel extends Phaser.State {
         enemy._health -= this._damage;
         if (enemy._health < 1) {
             enemy.kill();
-        } else if (enemy.body.x < this.player.body.x) {
-            enemy.body.velocity.x = +180;
-        } else {
-            enemy.body.velocity.x = -180;
         }
+        enemy._enemy_MovementReset();
         enemy.body.velocity.y = 0;
         enemy._player_spotted = true;
     }
@@ -166,8 +180,12 @@ class SimpleLevel extends Phaser.State {
         this._checkCollision();
         //Fire Weapon RateofFire, Damage, Recoil. We eventually need to add , key here. for the bulletsprite.
         if (this.game.input.activePointer.isDown && this.player._combat_mode_engaged && this.player._reloading === false) {
-            this._fireWeapon(80, 6, 10);
+            this._fireWeapon(80, 6, 12);
+            //Revolver is more like 210, 28, 60
+            //Good values for the smg are 80, 6, 16
+            
+            //this._monster_Spawner();
         }
-        this._player_position_update ();
+        this._player_position_update();
     }
 }
