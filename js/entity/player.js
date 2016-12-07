@@ -79,7 +79,6 @@ class Player extends Phaser.Sprite {
             this._reloadImg.alpha = 0.0;
             this._reloadProgress = this.game.add.tileSprite(244, 25, 26, 10, 'redPixel');
             this._reloadProgress.fixedToCamera = true;
-        
             this._reloadProgress.alpha = 0.0;
             this._combat_marker.fixedToCamera = true;
             this._combat_marker.alpha = 0.0;
@@ -89,8 +88,20 @@ class Player extends Phaser.Sprite {
             this.addChild(this._laser_pointer);
             this._laser_pointer.alpha = 0.0;
             //Load waveCounter
-            this.waveCounter = this.game.add.sprite(277, 3, 'waveCounter');
-            this.waveCounter.fixedToCamera = true;
+            this._waveCounter = this.game.add.sprite(277, 3, 'waveCounter');
+            this._currentWave = this.game.add.text(345, 8, 0, {
+                fill: "#e07723"
+            });
+            this._currentWave.font = 'Press Start 2P';
+            this._currentWave.fixedToCamera = true;
+            this._currentWave.fontSize = 16;
+            this._totalWaves = this.game.add.text(362, 26, '3',
+                                                  {fill: "#e07723"}
+            );
+        this._totalWaves.font = 'Press Start 2P';
+        this._totalWaves.fontSize = 16;
+        this._totalWaves.fixedToCamera = true;
+            this._waveCounter.fixedToCamera = true;
         }
         /*
         _initPhysic(){
@@ -116,16 +127,18 @@ class Player extends Phaser.Sprite {
     _reload() {
         this._reloadProgress.alpha = 1.0;
         this._reloadImg.alpha = 1.0;
-        
-       this._exampleTween = this.game.add.tween(this._reloadProgress).to( { width: 0 }, 1500, 'Linear', true );
-   
+
+        this._exampleTween = this.game.add.tween(this._reloadProgress).to({
+            width: 0
+        }, 1500, 'Linear', true);
+
         this.game.time.events.add(Phaser.Timer.SECOND * 1.6, this._reloadComplete, this);
     }
 
     _reloadComplete() {
             //this.game.tweens.remove(this._reloadProgress);
-        this._reloadProgress.width = 26;
-        console.log(this._reloadProgress.width);
+            this._reloadProgress.width = 26;
+            console.log(this._reloadProgress.width);
             this._combat_mode_engaged = false;
             this._ammo = this._magazine_size;
             this._combat_marker.alpha = 0.0;
@@ -153,14 +166,14 @@ class Player extends Phaser.Sprite {
     update() {
         //on player actions :
         // moving cursor
-        this._ammo_Counter.setText(this._ammo);
         this._health_pixel.width = this._health / 100 * 262;
         this._laser_pointer.rotation = this.game.physics.arcade.angleToPointer(this);
-        this._laser_pointer.angle = this._laser_pointer.angle + this._recoil;
+        this._laser_pointer.angle += + this._recoil;
+        if(this.game.input.activePointer.isDown) {} else {
         if (this._recoil != 0) {
             this._recoil = 0.90 * this._recoil; //reduce recoil by 10%
         }
-
+        }
 
 
         //on the floor :

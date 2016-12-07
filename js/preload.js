@@ -17,6 +17,7 @@ class Preload extends Phaser.State {
         this.load.image('bullet', 'img/bullet.png');
         this.load.image('reload', 'img/reload.png');
         this.load.image('waveCounter', 'img/waveCounter.png');
+        this.load.image('WaveButton', 'img/EndOfWave.png');
         // js scripts :
         this.load.script('player', 'js/entity/player.js');
         this.load.script('enemy', 'js/entity/enemy.js');

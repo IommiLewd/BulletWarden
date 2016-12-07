@@ -13,18 +13,19 @@ class Enemy extends Phaser.Sprite {
         this._health = health;
         this._map = game.add.tilemap('level-1');
         this.randomVelocity = velocity;
-        this.game.time.events.add(Phaser.Timer.SECOND * 1.5, this._engage_Velocity, this);
         this._player_Spotted = true;
+        var seededTimer = Math.random() * (8 - 1) + 1;
+        this.game.time.events.add(Phaser.Timer.SECOND * seededTimer, this._engage_Velocity, this);
     }
     _engage_Velocity() {
         this.body.velocity.x = this.randomVelocity;
     }
-    _enemy_MovementReset(){
-               if (this.body.x < this.horizontalCheck) {
-                    this.body.velocity.x = +180;
-                } else {
-                    this.body.velocity.x = -180;
-                }
+    _enemy_MovementReset() {
+        if (this.body.x < this.horizontalCheck) {
+            this.body.velocity.x = +180;
+        } else {
+            this.body.velocity.x = -180;
+        }
     }
     update() {
         this.heightCheck;
@@ -33,21 +34,22 @@ class Enemy extends Phaser.Sprite {
             this.heightCheck = this._playerPositionY;
             this.horizontalCheck = this._playerPositionX;
         }
-        if(this._player_Spotted) {
-        var direction;
-        if (this.body.velocity.x > 0) {
-            this.scale.setTo(-1, 1);
-            direction = 1;
-        } else {
-            this.scale.setTo(1, 1);
-            direction = -1;
-        }
-        var nextX = this.x + direction * (Math.abs(this.width) / 2 + 1);
-        var nextY = this.bottom + 1;
-        var nextTile = this._map.getTileWorldXY(nextX, nextY, 64, 64, 'CollisionLayer');
+        if (this._player_Spotted) {
+            var direction;
+            if (this.body.velocity.x > 0) {
+                this.scale.setTo(-1, 1);
+                direction = 1;
+            } else {
+                this.scale.setTo(1, 1);
+                direction = -1;
+            }
+            var nextX = this.x + direction * (Math.abs(this.width) / 2 + 1);
+            var nextY = this.bottom + 1;
+            var nextTile = this._map.getTileWorldXY(nextX, nextY, 64, 64, 'CollisionLayer');
 
-        if (!nextTile && this.body.blocked.down && this.y > this.heightCheck - 6) {
-            this.body.velocity.x *= -1;
+            if (!nextTile && this.body.blocked.down && this.y > this.heightCheck - 6) {
+                this.body.velocity.x *= -1;
+            }
         }
     }
-}}
+}

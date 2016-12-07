@@ -28,21 +28,44 @@ class SimpleLevel extends Phaser.State {
             this._background_layer = this._map.createLayer('BackgroundLayer');
             this._collision_layer = this._map.createLayer('CollisionLayer');
             this._ladder_layer = this._map.createLayer('LadderLayer');
+            this._front_layer = this._map.createLayer('ForegroundLayer');
+      
+          this._front_layer.bringToTop();
             this.game.world.sendToBack(this._background_layer);
             this.game.world.sendToBack(this._back_tiles);
             this.game.world.sendToBack(this.background);
             this._collision_layer.resizeWorld();
             this._initBullets();
+            this._initSpawn();
             //Nextfire var is for the gun
             this._nextFire = 0;
             //Bitetimer is the damagetimer
             this.biteTimer = 0;
+
+            //currentCounter starts at 0
+            this._current_wave = 0;
         }
+    
         // load player/ add player
+           _addEnemies() {
+        //Create Group enemies to handle collisions
+        this.enemies = this.add.group();
+        //Create Array to store all objects with the type 'enemy'
+        var enemyArr = this._findObjectsByType('enemy', this._map, 'ObjectLayer');
+        //For Each element in array create Enemy Instance
+        enemyArr.forEach(function (element) {
+            this.enemy = new Enemy(this.game, element.x, element.y, 'monster', undefined, this.map, 80);
+            //add enemy to enemies array
+            
+            this.enemies.add(this.enemy);
+        }, this);
+          
+    }
     _addPlayer(x, y) {
         var playerArr = this._findObjectsByType("player", this._map, 'ObjectLayer');
         this.player = new Player(this.game, playerArr[0].x, playerArr[0].y);
     }
+
 
     _player_position_update(enemy, enemies, player) {
             var capturedPosition = this.player.body.y;
@@ -53,38 +76,38 @@ class SimpleLevel extends Phaser.State {
             })
         }
         //Adding Enemies
-    _addEnemies() {
-        //Create Group enemies to handle collisions
-        this.enemies = this.add.group();
-        //Create Array to store all objects with the type 'enemy'
-        var enemyArr = this._findObjectsByType('enemy', this._map, 'ObjectLayer');
-        //For Each element in array create Enemy Instance
-        enemyArr.forEach(function (element) {
-            this.enemy = new Enemy(this.game, element.x, element.y, 'monster', undefined, this.map, 80);
-            //add enemy to enemies array
-            this.enemies.add(this.enemy);
-        }, this);
+ 
+    _initSpawn(){
+        this._spawnImage = this.game.add.sprite(774, 30, 'WaveButton');
+        this._spawnImage.fixedToCamera = true;
+        this._spawnImage.inputEnabled = true;
+        this._spawnImage.events.onInputDown.add(this._monster_Spawner, this);
     }
 
     // Beginning monsterspawner here
     _monster_Spawner() {
+            this._current_wave++;
+        this.player._currentWave.setText(this._current_wave);
+            console.log('MonsterSpawner Fired! Current Wave Count ' + this._current_wave);
             var spawnArr = this._findObjectsByType('MonsterSpawner', this._map, 'ObjectLayer');
             //For Each element in array create Enemy Instance
-            spawnArr.forEach(function (element) {
-                for (this.i = 0; this.i < 2; this.i++) {
-                    this.enemy = new Enemy(this.game, element.x, element.y, 'monster', undefined, this.map, 80);
-                }
-                //add enemy to enemies array
-                this.enemies.add(this.enemy);
-            }, this);
-
+            for (this.r = 0; this.r < 4 + this._current_wave; this.r++) {
+                spawnArr.forEach(function (element) {
+                    for (this.i = 0; this.i < 1; this.i++) {
+                        this.enemy = new Enemy(this.game, element.x, element.y, 'monster', undefined, this.map, 80);
+                        console.log('Enemy Added');
+                    }
+                    //add enemy to enemies array
+                    this.enemies.add(this.enemy);
+                }, this);
+            }
         }
         //We use this to find and create objects from the json.
     _findObjectsByType(targetType, tilemap, layer) {
         var result = [];
         tilemap.objects[layer].forEach(function (element) {
             if (element.type == targetType) {
-                element.y -= tilemap.tileHeight;
+                //element.y -= tilemap.tileHeight;
                 result.push(element);
             }
         }, this);
@@ -122,6 +145,7 @@ class SimpleLevel extends Phaser.State {
         this.bullet;
         this.fireRate = fireRate;
         if (this.game.time.now > this._nextFire && this.bullets.countDead() > 3 && this.player._ammo > 0) {
+            //this._monster_Spawner();
             this._nextFire = this.game.time.now + this.fireRate;
             this.bullet = this.bullets.getFirstDead();
             this.bullet.reset(this.player.body.x, this.player.body.y + 32);
@@ -131,7 +155,7 @@ class SimpleLevel extends Phaser.State {
             this.bullet.bringToTop();
             this._damage = damage;
             this.player._ammo--;
-            //this.player._ammo_Counter.setText(this.player._ammo);
+            this.player._ammo_Counter.setText(this.player._ammo);
             console.log(this.player._ammo);
             this.bullets.add(this.bullet);
             if (this.player._laser_pointer.angle < 90 && this.player._laser_pointer.angle > -90) {
@@ -169,8 +193,11 @@ class SimpleLevel extends Phaser.State {
         //set the physics
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this._loadLevel();
-        this._addPlayer(0, 0);
+        
         this._addEnemies();
+        this._front_layer.bringToTop();
+        this._addPlayer(0, 0);
+        
         this.game.camera.follow(this.player);
         //Everything on _collision_layer will collide
         this._map.setCollisionBetween(0, 160, true, this._collision_layer);
@@ -180,12 +207,14 @@ class SimpleLevel extends Phaser.State {
         this._checkCollision();
         //Fire Weapon RateofFire, Damage, Recoil. We eventually need to add , key here. for the bulletsprite.
         if (this.game.input.activePointer.isDown && this.player._combat_mode_engaged && this.player._reloading === false) {
-            this._fireWeapon(80, 6, 12);
+            this._fireWeapon(80, 6, 5);
             //Revolver is more like 210, 28, 60
             //Good values for the smg are 80, 6, 16
-            
-            //this._monster_Spawner();
+            //console.log(this.enemies.total);
+
         }
+
         this._player_position_update();
+        //console.log(this.enemies.total);
     }
 }
