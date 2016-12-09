@@ -41,6 +41,7 @@ class Player extends Phaser.Sprite {
         this._initHealth(100);
         this._initCombat();
         this._reloading = false;
+        this._playerFacingRight = true;
 
     }
 
@@ -102,6 +103,10 @@ class Player extends Phaser.Sprite {
         this._totalWaves.fontSize = 16;
         this._totalWaves.fixedToCamera = true;
             this._waveCounter.fixedToCamera = true;
+        this.gunSprite = this.game.add.sprite(0,-8, 'Gun');
+        this.gunSprite.anchor.setTo(0.5);
+        this.addChild(this.gunSprite);
+        this.gunSprite.alpha = 0.0;
         }
         /*
         _initPhysic(){
@@ -115,11 +120,13 @@ class Player extends Phaser.Sprite {
             this._combat_marker.alpha = 1.0;
             this._laser_pointer.alpha = 0.2;
             this._combat_mode_engaged = true;
+            this.gunSprite.alpha = 1.0;
         } else {
             if (this._reloading === false) {
                 this._reloading = true;
                 this._laser_pointer.alpha = 0.0;
                 this._reload();
+                
             }
         }
     }
@@ -147,6 +154,9 @@ class Player extends Phaser.Sprite {
             this._canClimb = true;
             this._reloadProgress.alpha = 0.0;
             this._reloadProgress.width = 26;
+        this.gunSprite.alpha = 0.0;
+        this._ammo_Counter.setText(this._ammo);
+       
         }
         // LADDER MODE :
     isOnLadder() {
@@ -164,6 +174,10 @@ class Player extends Phaser.Sprite {
     //@override
 
     update() {
+        console.log(this._laser_pointer.angle);
+        if (this._laser_pointer.angle < 90 && this._laser_pointer.angle > -90) {
+            this.gunSprite.scale.setTo(1, 1);
+        } else { this.gunSprite.scale.setTo(1, -1);}
         //on player actions :
         // moving cursor
         this._health_pixel.width = this._health / 100 * 262;
@@ -174,6 +188,7 @@ class Player extends Phaser.Sprite {
             this._recoil = 0.90 * this._recoil; //reduce recoil by 10%
         }
         }
+        this.gunSprite.angle = this._laser_pointer.angle;
 
 
         //on the floor :

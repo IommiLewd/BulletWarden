@@ -66,7 +66,7 @@ class SimpleLevel extends Phaser.State {
         this.player = new Player(this.game, playerArr[0].x, playerArr[0].y);
     }
 
-
+    
     _player_position_update(enemy, enemies, player) {
             var capturedPosition = this.player.body.y;
             var capturedPosition2 = this.player.body.x;
@@ -83,8 +83,19 @@ class SimpleLevel extends Phaser.State {
         this._spawnImage.inputEnabled = true;
         this._spawnImage.events.onInputDown.add(this._monster_Spawner, this);
     }
-
     // Beginning monsterspawner here
+    /*
+    Increase current wave by 1
+    Lets say maximum round is 3, and start with that. 0-(1) is one round 1-(2) is another, and then 2-(3).
+    aite lets try... 2*2, 3*2 and then 4*2
+    soo..
+    this.currentwave++;
+    if(currentwave = 1 && roundInProgress) {}
+    if(currentwave = 2 && roundInProgress) {}
+    if(currentwave = 3 && roundInProgress) {}
+    
+    
+    */
     _monster_Spawner() {
             this._current_wave++;
         this.player._currentWave.setText(this._current_wave);
@@ -207,9 +218,8 @@ class SimpleLevel extends Phaser.State {
         this._checkCollision();
         //Fire Weapon RateofFire, Damage, Recoil. We eventually need to add , key here. for the bulletsprite.
         if (this.game.input.activePointer.isDown && this.player._combat_mode_engaged && this.player._reloading === false) {
-            this._fireWeapon(80, 6, 5);
-            //Revolver is more like 210, 28, 60
-            //Good values for the smg are 80, 6, 16
+            this._fireWeapon(80, 6, 5); //Smg Settings
+            //this._fireWeapon(150, 30, 34); //Revolver settings. Kinda shit
             //console.log(this.enemies.total);
 
         }
