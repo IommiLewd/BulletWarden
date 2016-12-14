@@ -164,7 +164,7 @@ class SimpleLevel extends Phaser.State {
             //this._monster_Spawner();
             this._nextFire = this.game.time.now + this.fireRate;
             this.bullet = this.bullets.getFirstDead();
-            this.bullet.reset(this.player.body.x, this.player.body.y + 32);
+            this.bullet.reset(this.player.body.x + 32, this.player.body.y + 36);
             this.game.camera.shake(0.02, 30);
             if (this.player._playerFacingRight) {
                 this.game.physics.arcade.velocityFromAngle(this.player._laser_pointer.angle, 2000, this.bullet.body.velocity);
@@ -229,7 +229,7 @@ class SimpleLevel extends Phaser.State {
         this._checkCollision();
         //Fire Weapon RateofFire, Damage, Recoil. We eventually need to add , key here. for the bulletsprite.
         if (this.game.input.activePointer.isDown && this.player._combat_mode_engaged && this.player._reloading === false) {
-            this._fireWeapon(80, 6, 5); //Smg Settings
+            this._fireWeapon(80, 6, 3); //Smg Settings
             //this._fireWeapon(150, 30, 34); //Revolver settings. Kinda shit
             //console.log(this.enemies.total);
         }
