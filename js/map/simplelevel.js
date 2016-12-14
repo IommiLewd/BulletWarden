@@ -15,39 +15,39 @@ class SimpleLevel extends Phaser.State {
         }
         // private methods :
     _loadLevel() {
-            //TODO: load the background : should depend on the level name
-            this.game.canvas.oncontextmenu = function (e) {
-                e.preventDefault();
-            }
-            this.background = this.game.add.sprite(0, 0, 'background');
-            this.background.fixedToCamera = true;
-            this._map = this.add.tilemap('level-1');
-            this._map.addTilesetImage('guntiles', 'tiles-1');
-            //create layers
-            this._back_tiles = this._map.createLayer('BackTiles');
-            this._background_layer = this._map.createLayer('BackgroundLayer');
-            this._collision_layer = this._map.createLayer('CollisionLayer');
-            this._ladder_layer = this._map.createLayer('LadderLayer');
-            this._front_layer = this._map.createLayer('ForegroundLayer');
-      
-          this._front_layer.bringToTop();
-            this.game.world.sendToBack(this._background_layer);
-            this.game.world.sendToBack(this._back_tiles);
-            this.game.world.sendToBack(this.background);
-            this._collision_layer.resizeWorld();
-            this._initBullets();
-            this._initSpawn();
-            //Nextfire var is for the gun
-            this._nextFire = 0;
-            //Bitetimer is the damagetimer
-            this.biteTimer = 0;
-
-            //currentCounter starts at 0
-            this._current_wave = 0;
+        //TODO: load the background : should depend on the level name
+        this.game.canvas.oncontextmenu = function (e) {
+            e.preventDefault();
         }
-    
-        // load player/ add player
-           _addEnemies() {
+        this.background = this.game.add.sprite(0, 0, 'background');
+        this.background.fixedToCamera = true;
+        this._map = this.add.tilemap('level-1');
+        this._map.addTilesetImage('guntiles', 'tiles-1');
+        //create layers
+        this._back_tiles = this._map.createLayer('BackTiles');
+        this._background_layer = this._map.createLayer('BackgroundLayer');
+        this._collision_layer = this._map.createLayer('CollisionLayer');
+        this._ladder_layer = this._map.createLayer('LadderLayer');
+        this._front_layer = this._map.createLayer('ForegroundLayer');
+
+        this._front_layer.bringToTop();
+        this.game.world.sendToBack(this._background_layer);
+        this.game.world.sendToBack(this._back_tiles);
+        this.game.world.sendToBack(this.background);
+        this._collision_layer.resizeWorld();
+        this._initBullets();
+        this._initSpawn();
+        //Nextfire var is for the gun
+        this._nextFire = 0;
+        //Bitetimer is the damagetimer
+        this.biteTimer = 0;
+
+        //currentCounter starts at 0
+        this._current_wave = 0;
+    }
+
+    // load player/ add player
+    _addEnemies() {
         //Create Group enemies to handle collisions
         this.enemies = this.add.group();
         //Create Array to store all objects with the type 'enemy'
@@ -56,17 +56,17 @@ class SimpleLevel extends Phaser.State {
         enemyArr.forEach(function (element) {
             this.enemy = new Enemy(this.game, element.x, element.y, 'monster', undefined, this.map, 80);
             //add enemy to enemies array
-            
+
             this.enemies.add(this.enemy);
         }, this);
-          
+
     }
     _addPlayer(x, y) {
         var playerArr = this._findObjectsByType("player", this._map, 'ObjectLayer');
         this.player = new Player(this.game, playerArr[0].x, playerArr[0].y);
     }
 
-    
+
     _player_position_update(enemy, enemies, player) {
             var capturedPosition = this.player.body.y;
             var capturedPosition2 = this.player.body.x;
@@ -74,31 +74,36 @@ class SimpleLevel extends Phaser.State {
                 enemy._playerPositionY = capturedPosition;
                 enemy._playerPositionX = capturedPosition2;
             })
+            if (this.player.world.x < this._positionEvaluator) {
+                this.player._playerFacingRight = true;
+            } else {
+                this.player._playerFacingRight = false;
+            }
         }
         //Adding Enemies
- 
-    _initSpawn(){
-        this._spawnImage = this.game.add.sprite(774, 30, 'WaveButton');
-        this._spawnImage.fixedToCamera = true;
-        this._spawnImage.inputEnabled = true;
-        this._spawnImage.events.onInputDown.add(this._monster_Spawner, this);
-    }
-    // Beginning monsterspawner here
-    /*
-    Increase current wave by 1
-    Lets say maximum round is 3, and start with that. 0-(1) is one round 1-(2) is another, and then 2-(3).
-    aite lets try... 2*2, 3*2 and then 4*2
-    soo..
-    this.currentwave++;
-    if(currentwave = 1 && roundInProgress) {}
-    if(currentwave = 2 && roundInProgress) {}
-    if(currentwave = 3 && roundInProgress) {}
+
+    _initSpawn() {
+            this._spawnImage = this.game.add.sprite(774, 30, 'WaveButton');
+            this._spawnImage.fixedToCamera = true;
+            this._spawnImage.inputEnabled = true;
+            this._spawnImage.events.onInputDown.add(this._monster_Spawner, this);
+        }
+        // Beginning monsterspawner here
+        /*
+        Increase current wave by 1
+        Lets say maximum round is 3, and start with that. 0-(1) is one round 1-(2) is another, and then 2-(3).
+        aite lets try... 2*2, 3*2 and then 4*2
+        soo..
+        this.currentwave++;
+        if(currentwave = 1 && roundInProgress) {}
+        if(currentwave = 2 && roundInProgress) {}
+        if(currentwave = 3 && roundInProgress) {}
     
     
-    */
+        */
     _monster_Spawner() {
             this._current_wave++;
-        this.player._currentWave.setText(this._current_wave);
+            this.player._currentWave.setText(this._current_wave);
             console.log('MonsterSpawner Fired! Current Wave Count ' + this._current_wave);
             var spawnArr = this._findObjectsByType('MonsterSpawner', this._map, 'ObjectLayer');
             //For Each element in array create Enemy Instance
@@ -161,7 +166,11 @@ class SimpleLevel extends Phaser.State {
             this.bullet = this.bullets.getFirstDead();
             this.bullet.reset(this.player.body.x, this.player.body.y + 32);
             this.game.camera.shake(0.02, 30);
-            this.game.physics.arcade.velocityFromAngle(this.player._laser_pointer.angle, 2000, this.bullet.body.velocity);
+            if (this.player._playerFacingRight) {
+                this.game.physics.arcade.velocityFromAngle(this.player._laser_pointer.angle, 2000, this.bullet.body.velocity);
+            } else {
+                this.game.physics.arcade.velocityFromAngle(this.player._laser_pointer.angle *= -1, 2000, this.bullet.body.velocity);
+            }
             this.bullet.angle = this.player._laser_pointer.angle;
             this.bullet.bringToTop();
             this._damage = damage;
@@ -169,10 +178,10 @@ class SimpleLevel extends Phaser.State {
             this.player._ammo_Counter.setText(this.player._ammo);
             console.log(this.player._ammo);
             this.bullets.add(this.bullet);
-            if (this.player._laser_pointer.angle < 90 && this.player._laser_pointer.angle > -90) {
+            if (this.player._playerFacingRight) {
                 this.player._recoil -= recoil;
             } else {
-                this.player._recoil += recoil;
+                this.player._recoil -= recoil;
             }
         }
     }
@@ -204,25 +213,29 @@ class SimpleLevel extends Phaser.State {
         //set the physics
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this._loadLevel();
-        
+
         this._addEnemies();
         this._front_layer.bringToTop();
         this._addPlayer(0, 0);
-        
+
         this.game.camera.follow(this.player);
         //Everything on _collision_layer will collide
         this._map.setCollisionBetween(0, 160, true, this._collision_layer);
         this._map.setTileIndexCallback([33, 43, 51, 61], this.player.setOnLadder, this.player, this._ladder_layer);
     }
     update() {
+        this._positionEvaluator = this.game.input.activePointer.x + this.game.camera.x;
+        console.log('facing right is ' + this.player._playerFacingRight + ' player.world.x is ' + this.player.world.x + ' mouse.x is ' + this._positionEvaluator);
         this._checkCollision();
         //Fire Weapon RateofFire, Damage, Recoil. We eventually need to add , key here. for the bulletsprite.
         if (this.game.input.activePointer.isDown && this.player._combat_mode_engaged && this.player._reloading === false) {
             this._fireWeapon(80, 6, 5); //Smg Settings
             //this._fireWeapon(150, 30, 34); //Revolver settings. Kinda shit
             //console.log(this.enemies.total);
-
         }
+
+
+
 
         this._player_position_update();
         //console.log(this.enemies.total);

@@ -4,7 +4,7 @@ class Preload extends Phaser.State {
         //this.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
 
         // Images :
-        this.load.image('player', 'img/PlayerTemplate.png');
+        this.load.image('player', 'img/PlayerTemplateTest.png');
         this.load.image('background', 'img/backgroundImage.png');
         this.load.image('monster', 'img/MonsterTemplate.png');
         this.load.image('ammoBox', 'img/ammoBox.png');

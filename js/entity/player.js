@@ -21,7 +21,7 @@ class Player extends Phaser.Sprite {
 
         super(game, posx, posy, 'player', 3);
         this.anchor.setTo(0.5);
-        this.animations.add('walking', [0, 1, 2, 1], 6, true);
+        //this.animations.add('walking', [0, 1, 2, 1], 6, true);
 
         game.add.existing(this);
         game.physics.arcade.enable(this);
@@ -96,17 +96,17 @@ class Player extends Phaser.Sprite {
             this._currentWave.font = 'Press Start 2P';
             this._currentWave.fixedToCamera = true;
             this._currentWave.fontSize = 16;
-            this._totalWaves = this.game.add.text(362, 26, '3',
-                                                  {fill: "#e07723"}
-            );
-        this._totalWaves.font = 'Press Start 2P';
-        this._totalWaves.fontSize = 16;
-        this._totalWaves.fixedToCamera = true;
+            this._totalWaves = this.game.add.text(362, 26, '3', {
+                fill: "#e07723"
+            });
+            this._totalWaves.font = 'Press Start 2P';
+            this._totalWaves.fontSize = 16;
+            this._totalWaves.fixedToCamera = true;
             this._waveCounter.fixedToCamera = true;
-        this.gunSprite = this.game.add.sprite(0,-8, 'Gun');
-        this.gunSprite.anchor.setTo(0.5);
-        this.addChild(this.gunSprite);
-        this.gunSprite.alpha = 0.0;
+            this.gunSprite = this.game.add.sprite(6, -2, 'Gun');
+            this.gunSprite.anchor.setTo(0.5);
+            this.addChild(this.gunSprite);
+            this.gunSprite.alpha = 0.0;
         }
         /*
         _initPhysic(){
@@ -126,7 +126,7 @@ class Player extends Phaser.Sprite {
                 this._reloading = true;
                 this._laser_pointer.alpha = 0.0;
                 this._reload();
-                
+
             }
         }
     }
@@ -154,9 +154,9 @@ class Player extends Phaser.Sprite {
             this._canClimb = true;
             this._reloadProgress.alpha = 0.0;
             this._reloadProgress.width = 26;
-        this.gunSprite.alpha = 0.0;
-        this._ammo_Counter.setText(this._ammo);
-       
+            this.gunSprite.alpha = 0.0;
+            this._ammo_Counter.setText(this._ammo);
+
         }
         // LADDER MODE :
     isOnLadder() {
@@ -174,19 +174,28 @@ class Player extends Phaser.Sprite {
     //@override
 
     update() {
-        console.log(this._laser_pointer.angle);
-        if (this._laser_pointer.angle < 90 && this._laser_pointer.angle > -90) {
+        
+        if (this._playerFacingRight) {
+            this._laser_pointer.rotation = this.game.physics.arcade.angleToPointer(this);
+            this._laser_pointer.scale.setTo(1, 1);
+            this.scale.setTo(1, 1);
             this.gunSprite.scale.setTo(1, 1);
-        } else { this.gunSprite.scale.setTo(1, -1);}
+        } else {
+            this._laser_pointer.rotation = this.game.physics.arcade.angleToPointer(this);
+            this._laser_pointer.rotation *= -1;
+            this.scale.setTo(-1, 1);
+            this._laser_pointer.scale.setTo(-1, -1);
+            this.gunSprite.scale.setTo(1, -1);
+        }
         //on player actions :
         // moving cursor
         this._health_pixel.width = this._health / 100 * 262;
-        this._laser_pointer.rotation = this.game.physics.arcade.angleToPointer(this);
-        this._laser_pointer.angle += + this._recoil;
-        if(this.game.input.activePointer.isDown) {} else {
-        if (this._recoil != 0) {
-            this._recoil = 0.90 * this._recoil; //reduce recoil by 10%
-        }
+        //this._laser_pointer.rotation = this.game.physics.arcade.angleToPointer(this);
+        this._laser_pointer.angle += +this._recoil;
+        if (this.game.input.activePointer.isDown) {} else {
+            if (this._recoil != 0) {
+                this._recoil = 0.90 * this._recoil; //reduce recoil by 10%
+            }
         }
         this.gunSprite.angle = this._laser_pointer.angle;
 
