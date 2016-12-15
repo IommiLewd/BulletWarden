@@ -58,6 +58,7 @@ class SimpleLevel extends Phaser.State {
             //add enemy to enemies array
 
             this.enemies.add(this.enemy);
+   
         }, this);
 
     }
@@ -186,6 +187,7 @@ class SimpleLevel extends Phaser.State {
         }
     }
     _enemy_hit(bullet, enemy) {
+        enemy.animations.play('FastMovement');
         bullet.kill();
         enemy._health -= this._damage;
         if (enemy._health < 1) {
@@ -194,6 +196,9 @@ class SimpleLevel extends Phaser.State {
         enemy._enemy_MovementReset();
         enemy.body.velocity.y = 0;
         enemy._player_spotted = true;
+        enemy._damage_animation();
+    
+
     }
     _kill_bullet(bullet, _collision_layer) {
         this.bullet.kill();
@@ -229,14 +234,10 @@ class SimpleLevel extends Phaser.State {
         this._checkCollision();
         //Fire Weapon RateofFire, Damage, Recoil. We eventually need to add , key here. for the bulletsprite.
         if (this.game.input.activePointer.isDown && this.player._combat_mode_engaged && this.player._reloading === false) {
-            this._fireWeapon(80, 6, 3); //Smg Settings
+            this._fireWeapon(110, 6, 3); //Smg Settings
             //this._fireWeapon(150, 30, 34); //Revolver settings. Kinda shit
             //console.log(this.enemies.total);
         }
-
-
-
-
         this._player_position_update();
         //console.log(this.enemies.total);
     }

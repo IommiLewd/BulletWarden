@@ -4,6 +4,7 @@ class Enemy extends Phaser.Sprite {
         if (velocity === undefined) {
             velocity = (60 + Math.random() * 20) * (Math.random() < 0.5 ? 1 : -1);
         }
+
         game.add.existing(this);
         game.physics.arcade.enable(this);
         this.anchor.setTo(0.5);
@@ -16,9 +17,15 @@ class Enemy extends Phaser.Sprite {
         this._player_Spotted = true;
         var seededTimer = Math.random() * (8 - 1) + 1;
         this.game.time.events.add(Phaser.Timer.SECOND * seededTimer, this._engage_Velocity, this);
+        this.animations.add('Movement', [0, 1, 2, 3], 3, true);
+        this.animations.add('FastMovement', [0, 1, 2, 3], 9, true);
+        this.animations.add('MonsterDamage', [4, 5, 6, 7], 15, false);
+        this.animHandler = this.animations.play('Movement');
+        this._enemyTakingDamage = false;
     }
     _engage_Velocity() {
         this.body.velocity.x = this.randomVelocity;
+
     }
     _enemy_MovementReset() {
         if (this.body.x < this.horizontalCheck) {
@@ -27,6 +34,13 @@ class Enemy extends Phaser.Sprite {
             this.body.velocity.x = -180;
         }
     }
+
+    _damage_animation() {
+        this.animHandler = this.animations.play('MonsterDamage');
+        this.animHandler = this.animations.currentAnim.onComplete.add(function () {
+            this.animHandler = this.animations.play('Movement');
+        }, this);
+    }
     update() {
         this.heightCheck;
         this.horizontalCheck;
@@ -34,6 +48,7 @@ class Enemy extends Phaser.Sprite {
             this.heightCheck = this._playerPositionY;
             this.horizontalCheck = this._playerPositionX;
         }
+
         if (this._player_Spotted) {
             var direction;
             if (this.body.velocity.x > 0) {

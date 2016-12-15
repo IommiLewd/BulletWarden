@@ -19,10 +19,13 @@
 class Player extends Phaser.Sprite {
     constructor(game, posx, posy) {
 
-        super(game, posx, posy, 'player', 3);
+        super(game, posx, posy, 'player', 0);
         this.anchor.setTo(0.5);
-        //this.animations.add('walking', [0, 1, 2, 1], 6, true);
-
+        this.animations.add('lookingRight', [4, 5, 6, 7], 11, true);
+        this.animations.add('lookingLeft', [8, 9, 10, 11], 11, true);
+        this.animations.add('standingArmed', [0, 1], 2, true);
+        this.animations.add('standingUnarmed', [2], 2, true);
+        this.animations.add('fly', [3], 11, true);
         game.add.existing(this);
         game.physics.arcade.enable(this);
 
@@ -103,7 +106,7 @@ class Player extends Phaser.Sprite {
             this._totalWaves.fontSize = 16;
             this._totalWaves.fixedToCamera = true;
             this._waveCounter.fixedToCamera = true;
-            this.gunSprite = this.game.add.sprite(6, -2, 'Gun');
+            this.gunSprite = this.game.add.sprite(6, 0, 'Gun');
             this.gunSprite.anchor.setTo(0.5);
             this.addChild(this.gunSprite);
             this.gunSprite.alpha = 0.0;
@@ -203,10 +206,35 @@ class Player extends Phaser.Sprite {
         //on the floor :
         if (this._left.isDown) {
             this.body.velocity.x = -260;
+            if(this.body.onFloor()) {
+                if(this._playerFacingRight) {
+            this.animations.play('lookingLeft');
+                } else {this.animations.play('lookingRight')};
+                     } else {
+                this.animations.play('fly');
+            }
         } else if (this._right.isDown) {
             this.body.velocity.x = 260;
+            if(this.body.onFloor()) {
+                if(this._playerFacingRight) {
+            this.animations.play('lookingRight');
+                } else {
+                    this.animations.play('lookingLeft');
+                }
+            } else {
+                this.animations.play('fly');
+            }
         } else {
             this.body.velocity.x = 0;
+            if(this.body.onFloor()) {
+                if(this._combat_mode_engaged){
+            this.animations.play('standingArmed');
+                } else {
+                    this.animations.play('standingUnarmed');
+                }
+                               } else {
+                this.animations.play('fly');
+            }
         }
 
         //on jumping
