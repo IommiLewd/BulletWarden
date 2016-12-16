@@ -148,7 +148,6 @@ class Player extends Phaser.Sprite {
     _reloadComplete() {
             //this.game.tweens.remove(this._reloadProgress);
             this._reloadProgress.width = 26;
-            console.log(this._reloadProgress.width);
             this._combat_mode_engaged = false;
             this._ammo = this._magazine_size;
             this._combat_marker.alpha = 0.0;

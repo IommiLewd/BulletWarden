@@ -29,7 +29,7 @@ class SimpleLevel extends Phaser.State {
         this._collision_layer = this._map.createLayer('CollisionLayer');
         this._ladder_layer = this._map.createLayer('LadderLayer');
         this._front_layer = this._map.createLayer('ForegroundLayer');
-
+        
         this._front_layer.bringToTop();
         this.game.world.sendToBack(this._background_layer);
         this.game.world.sendToBack(this._back_tiles);
@@ -41,9 +41,10 @@ class SimpleLevel extends Phaser.State {
         this._nextFire = 0;
         //Bitetimer is the damagetimer
         this.biteTimer = 0;
-
+        this.amountOfEnemies = 0;
         //currentCounter starts at 0
         this._current_wave = 0;
+         
     }
 
     // load player/ add player
@@ -56,7 +57,8 @@ class SimpleLevel extends Phaser.State {
         enemyArr.forEach(function (element) {
             this.enemy = new Enemy(this.game, element.x, element.y, 'monster', undefined, this.map, 80);
             //add enemy to enemies array
-
+this.amountOfEnemies++;
+     console.log(this.amountOfEnemies);
             this.enemies.add(this.enemy);
    
         }, this);
@@ -96,9 +98,9 @@ class SimpleLevel extends Phaser.State {
         aite lets try... 2*2, 3*2 and then 4*2
         soo..
         this.currentwave++;
-        if(currentwave = 1 && roundInProgress) {}
-        if(currentwave = 2 && roundInProgress) {}
-        if(currentwave = 3 && roundInProgress) {}
+        if(currentwave = 1 && roundInProgress === false) {}
+        if(currentwave = 2 && roundInProgress === false) {}
+        if(currentwave = 3 && roundInProgress === false) {}
     
     
         */
@@ -177,7 +179,7 @@ class SimpleLevel extends Phaser.State {
             this._damage = damage;
             this.player._ammo--;
             this.player._ammo_Counter.setText(this.player._ammo);
-            console.log(this.player._ammo);
+
             this.bullets.add(this.bullet);
             if (this.player._playerFacingRight) {
                 this.player._recoil -= recoil;
@@ -230,11 +232,10 @@ class SimpleLevel extends Phaser.State {
     }
     update() {
         this._positionEvaluator = this.game.input.activePointer.x + this.game.camera.x;
-        console.log('facing right is ' + this.player._playerFacingRight + ' player.world.x is ' + this.player.world.x + ' mouse.x is ' + this._positionEvaluator);
         this._checkCollision();
         //Fire Weapon RateofFire, Damage, Recoil. We eventually need to add , key here. for the bulletsprite.
         if (this.game.input.activePointer.isDown && this.player._combat_mode_engaged && this.player._reloading === false) {
-            this._fireWeapon(110, 6, 3); //Smg Settings
+            this._fireWeapon(90, 6, 3); //Smg Settings
             //this._fireWeapon(150, 30, 34); //Revolver settings. Kinda shit
             //console.log(this.enemies.total);
         }
