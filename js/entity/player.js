@@ -45,7 +45,9 @@ class Player extends Phaser.Sprite {
         this._initCombat();
         this._reloading = false;
         this._playerFacingRight = true;
-
+        this._activeEnemies = 11;
+        this._enemiesInRound = 11;
+        
     }
 
     _initControl() {
@@ -68,6 +70,7 @@ class Player extends Phaser.Sprite {
         this._health_pixel.fixedToCamera = true;
     }
     _initCombat() {
+        
             //CombatMode Indicator
             this._combat_marker = this.game.add.sprite(6, 22, 'combatEngaged');
             this._reloadImg = this.game.add.sprite(144, 22, 'reload');
@@ -106,6 +109,11 @@ class Player extends Phaser.Sprite {
             this._totalWaves.fontSize = 16;
             this._totalWaves.fixedToCamera = true;
             this._waveCounter.fixedToCamera = true;
+            this.waveBar = this.game.add.sprite(276, 24, 'enemyCounterBar');
+            this.waveBar.fixedToCamera = true;
+            this.waveBarProgress = this.game.add.tileSprite(279, 27, 57, 3, 'redPixel');
+            this.waveBarProgress.fixedToCamera = true;
+        
             this.gunSprite = this.game.add.sprite(6, 0, 'Gun');
             this.gunSprite.anchor.setTo(0.5);
             this.addChild(this.gunSprite);
@@ -116,6 +124,12 @@ class Player extends Phaser.Sprite {
 
         }*/
         // COMBAT MODE :
+    
+    _enemyProgressUpdate(){
+        this.waveBarProgress.width = this._activeEnemies / this._enemiesInRound * 57;
+    }
+    
+    
     toggleCombatMode() {
         if (this._combat_mode_engaged === false && this._reloading === false) {
             this._canClimb = false;

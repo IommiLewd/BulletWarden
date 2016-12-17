@@ -29,7 +29,7 @@ class SimpleLevel extends Phaser.State {
         this._collision_layer = this._map.createLayer('CollisionLayer');
         this._ladder_layer = this._map.createLayer('LadderLayer');
         this._front_layer = this._map.createLayer('ForegroundLayer');
-        
+
         this._front_layer.bringToTop();
         this.game.world.sendToBack(this._background_layer);
         this.game.world.sendToBack(this._back_tiles);
@@ -44,7 +44,7 @@ class SimpleLevel extends Phaser.State {
         this.amountOfEnemies = 0;
         //currentCounter starts at 0
         this._current_wave = 0;
-         
+
     }
 
     // load player/ add player
@@ -57,10 +57,9 @@ class SimpleLevel extends Phaser.State {
         enemyArr.forEach(function (element) {
             this.enemy = new Enemy(this.game, element.x, element.y, 'monster', undefined, this.map, 80);
             //add enemy to enemies array
-this.amountOfEnemies++;
-     console.log(this.amountOfEnemies);
+            this.amountOfEnemies++;
             this.enemies.add(this.enemy);
-   
+
         }, this);
 
     }
@@ -141,6 +140,7 @@ this.amountOfEnemies++;
             this.biteTimer = this.time.now + 450;
             enemy._enemy_MovementReset();
         }
+
         this.game.time.events.add(Phaser.Timer.SECOND * 1, enemy._enemy_MovementReset, enemy);
     }
 
@@ -194,13 +194,14 @@ this.amountOfEnemies++;
         enemy._health -= this._damage;
         if (enemy._health < 1) {
             enemy.kill();
+            this.player._enemyProgressUpdate();
+            this.player._activeEnemies--;
+            //this._enemiesInRound = 11;
         }
         enemy._enemy_MovementReset();
         enemy.body.velocity.y = 0;
         enemy._player_spotted = true;
         enemy._damage_animation();
-    
-
     }
     _kill_bullet(bullet, _collision_layer) {
         this.bullet.kill();
