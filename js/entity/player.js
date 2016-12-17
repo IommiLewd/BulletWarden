@@ -127,6 +127,7 @@ class Player extends Phaser.Sprite {
     
     _enemyProgressUpdate(){
         this.waveBarProgress.width = this._activeEnemies / this._enemiesInRound * 57;
+        console.log(this._enemiesInRound);
     }
     
     

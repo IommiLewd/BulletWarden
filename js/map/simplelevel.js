@@ -36,7 +36,7 @@ class SimpleLevel extends Phaser.State {
         this.game.world.sendToBack(this.background);
         this._collision_layer.resizeWorld();
         this._initBullets();
-        this._initSpawn();
+
         //Nextfire var is for the gun
         this._nextFire = 0;
         //Bitetimer is the damagetimer
@@ -44,6 +44,7 @@ class SimpleLevel extends Phaser.State {
         this.amountOfEnemies = 0;
         //currentCounter starts at 0
         this._current_wave = 0;
+        this._waveModifier = 3;
 
     }
 
@@ -84,37 +85,20 @@ class SimpleLevel extends Phaser.State {
         }
         //Adding Enemies
 
-    _initSpawn() {
-            this._spawnImage = this.game.add.sprite(774, 30, 'WaveButton');
-            this._spawnImage.fixedToCamera = true;
-            this._spawnImage.inputEnabled = true;
-            this._spawnImage.events.onInputDown.add(this._monster_Spawner, this);
-        }
-        // Beginning monsterspawner here
-        /*
-        Increase current wave by 1
-        Lets say maximum round is 3, and start with that. 0-(1) is one round 1-(2) is another, and then 2-(3).
-        aite lets try... 2*2, 3*2 and then 4*2
-        soo..
-        this.currentwave++;
-        if(currentwave = 1 && roundInProgress === false) {}
-        if(currentwave = 2 && roundInProgress === false) {}
-        if(currentwave = 3 && roundInProgress === false) {}
-    
-    
-        */
     _monster_Spawner() {
             this._current_wave++;
+            this._waveModifier += 2;
             this.player._currentWave.setText(this._current_wave);
             console.log('MonsterSpawner Fired! Current Wave Count ' + this._current_wave);
             var spawnArr = this._findObjectsByType('MonsterSpawner', this._map, 'ObjectLayer');
             //For Each element in array create Enemy Instance
-            for (this.r = 0; this.r < 4 + this._current_wave; this.r++) {
+            for (this.r = 0; this.r < 4 + this._waveModifier; this.r++) {
                 spawnArr.forEach(function (element) {
                     for (this.i = 0; this.i < 1; this.i++) {
                         this.enemy = new Enemy(this.game, element.x, element.y, 'monster', undefined, this.map, 80);
                         console.log('Enemy Added');
                     }
+                       this.amountOfEnemies++;
                     //add enemy to enemies array
                     this.enemies.add(this.enemy);
                 }, this);
@@ -192,16 +176,31 @@ class SimpleLevel extends Phaser.State {
         enemy.animations.play('FastMovement');
         bullet.kill();
         enemy._health -= this._damage;
-        if (enemy._health < 1) {
-            enemy.kill();
-            this.player._enemyProgressUpdate();
-            this.player._activeEnemies--;
-            //this._enemiesInRound = 11;
-        }
+
         enemy._enemy_MovementReset();
         enemy.body.velocity.y = 0;
         enemy._player_spotted = true;
         enemy._damage_animation();
+        if (enemy._health < 1) {
+            enemy.kill();
+            this.player._activeEnemies--;
+            this.player._enemyProgressUpdate();
+            if (this.player._activeEnemies === 0) {
+
+
+                console.log('arghblargh');
+                this.amountOfEnemies = 0;
+
+                this._monster_Spawner();
+                this.player._activeEnemies = this.amountOfEnemies;
+                this.player._enemiesInRound = this.amountOfEnemies;
+                this.player._enemyProgressUpdate();
+                console.log()
+
+            }
+        }
+
+
     }
     _kill_bullet(bullet, _collision_layer) {
         this.bullet.kill();
@@ -236,7 +235,7 @@ class SimpleLevel extends Phaser.State {
         this._checkCollision();
         //Fire Weapon RateofFire, Damage, Recoil. We eventually need to add , key here. for the bulletsprite.
         if (this.game.input.activePointer.isDown && this.player._combat_mode_engaged && this.player._reloading === false) {
-            this._fireWeapon(90, 6, 3); //Smg Settings
+            this._fireWeapon(90, 12, 3); //Smg Settings (90, 6, 3)
             //this._fireWeapon(150, 30, 34); //Revolver settings. Kinda shit
             //console.log(this.enemies.total);
         }
