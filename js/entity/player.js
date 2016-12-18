@@ -57,6 +57,8 @@ class Player extends Phaser.Sprite {
         this._down = this.game.input.keyboard.addKey(Phaser.Keyboard.S);
         this._combat_button = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         this._combat_button.onDown.add(this.toggleCombatMode, this);
+         this._reload_button = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
+              this._reload_button.onDown.add(this._reload, this);
 
     }
     _initHealth(health) {
@@ -113,7 +115,6 @@ class Player extends Phaser.Sprite {
             this.waveBar.fixedToCamera = true;
             this.waveBarProgress = this.game.add.tileSprite(279, 27, 57, 3, 'redPixel');
             this.waveBarProgress.fixedToCamera = true;
-        
             this.gunSprite = this.game.add.sprite(6, 0, 'Gun');
             this.gunSprite.anchor.setTo(0.5);
             this.addChild(this.gunSprite);
@@ -156,7 +157,7 @@ class Player extends Phaser.Sprite {
         this._exampleTween = this.game.add.tween(this._reloadProgress).to({
             width: 0
         }, 1500, 'Linear', true);
-
+         this._reloading = true;
         this.game.time.events.add(Phaser.Timer.SECOND * 1.6, this._reloadComplete, this);
     }
 
