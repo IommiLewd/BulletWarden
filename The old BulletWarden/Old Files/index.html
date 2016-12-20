@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+      <style type="text/css">
+          body {background-color: gray;}
+         #phaser-example{border: 1px solid black;
+          width: 840px;
+          margin-left: auto;
+          margin-right: auto;}
+              
+  </style>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Rainworld Alpha   0.29</title>
+    <meta name="" content="CFTM">
+    <script src='js/phaser.js'></script>
+    <script src='js/boot.js'></script>
+    <script src='js/preload.js'></script>
+    <script src='js/firstMap.js'></script>
+    <script src='json/mapOne.json'></script>
+    <script src='prefabs/enemy.js'></script>
+    <script>
+        (function () {
+            var game = new Phaser.Game(840, 560, Phaser.WEBGL, 'phaser-example');
+            game.state.add("boot", boot);
+            game.state.add("Preload", preload);
+            game.state.add("firstMap", firstMap);
+            game.state.start('Preload');
+        })();
+    </script>
+
+</head>
+
+<body>
+    <div id='phaser-example'> </div>
+
+</body>
+
+</html>
