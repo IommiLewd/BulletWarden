@@ -143,7 +143,7 @@ class Player extends Phaser.Sprite {
 
     //@override
     update() {
-        this.cascade = this.gunSprite.world;
+        this._gunPosition = this.gunSprite.world;
         this._facingEvaluator();
         this._animationEvaluator();
         if (this._left.isDown) {

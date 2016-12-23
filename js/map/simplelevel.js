@@ -128,11 +128,7 @@ class SimpleLevel extends Phaser.State {
             if (this.game.time.now > this._nextFire && this.bullets.countDead() > 3) {
                 this._nextFire = this.game.time.now + this.fireRate;
                 this.bullet = this.bullets.getFirstDead();
-                if (this.player._playerFacingRight) {
-                    this.bullet.reset(this.player.body.x + 22, this.player.body.y + 26);
-                } else {
-                    this.bullet.reset(this.player.body.x, this.player.body.y + 28);
-                }
+                    this.bullet.reset(this.player._gunPosition.x, this.player._gunPosition.y);
                 this.game.camera.shake(0.006, 30);
                 if (this.player._playerFacingRight) {
                     this.game.physics.arcade.velocityFromAngle(this.player._laser_pointer.angle, 2400, this.bullet.body.velocity);
