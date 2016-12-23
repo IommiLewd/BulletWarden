@@ -122,6 +122,7 @@ class Player extends Phaser.Sprite {
     }
 
     setOnLadder() {
+        if (this.x % 64 > 22 && this.x % 64 < 56) {
         if (this.body.onFloor() === false && this._up.isDown) {
             this._ladderMode = true;
             this._laser_pointer.alpha = 0.0;
@@ -137,11 +138,12 @@ class Player extends Phaser.Sprite {
                 this._laser_pointer.alpha = 1.0;
             }, this);
         }
-    }
+    }}
 
 
     //@override
     update() {
+        this.cascade = this.gunSprite.world;
         this._facingEvaluator();
         this._animationEvaluator();
         if (this._left.isDown) {

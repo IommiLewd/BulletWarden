@@ -37,16 +37,37 @@ class SimpleLevel extends Phaser.State {
         this._initBullets();
         //Nextfire var is for the gun
         this._nextFire = 0;
-
-
     }
+
+
     _addPlayer(x, y) {
         var playerArr = this._findObjectsByType("player", this._map, 'ObjectLayer');
         this.player = new Player(this.game, playerArr[0].x, playerArr[0].y);
     }
 
+    _addEnemies() {
+        //Create Group enemies to handle collisions
+        this.enemies = this.add.group();
+        //Create Array to store all objects with the type 'enemy'
+        var enemyArr = this._findObjectsByType('enemy', this._map, 'ObjectLayer');
+        //For Each element in array create Enemy Instance
+        enemyArr.forEach(function (element) {
+            //this.enemy = new BasicEnemy(this.game, element.x, element.y, 'monster', undefined, this.map, 80);
+            this.enemy = new floatingEnemy(this.game, element.x, element.y, 'monsterSmall', undefined, this.map, 80);
+
+            this.enemies.add(this.enemy);
+
+        }, this);
+
+    }
 
     _player_position_update() {
+            var capturedPosition = this.player.body.y;
+            var capturedPosition2 = this.player.body.x;
+            this.enemies.forEach(function (enemy, enemies, player) {
+                enemy._playerPositionY = capturedPosition;
+                enemy._playerPositionX = capturedPosition2;
+            })
             if (this.player.world.x < this._positionEvaluator) {
                 this.player._playerFacingRight = true;
             } else {
@@ -58,13 +79,30 @@ class SimpleLevel extends Phaser.State {
         var result = [];
         tilemap.objects[layer].forEach(function (element) {
             if (element.type == targetType) {
-                //element.y -= tilemap.tileHeight;
                 result.push(element);
             }
         }, this);
         return result;
     }
 
+    _player_damage(player, enemy) {
+        console.log('player damage fired');
+        this.game.time.events.add(Phaser.Timer.SECOND * 1, enemy._enemy_MovementReset, enemy);
+    }
+
+    _enemy_hit(bullet, enemy) {
+        console.log('enemyHit!');
+        bullet.kill();
+        enemy._enemyHit();
+        enemy._health -= this._damage;
+        console.log('enemy health is ' + enemy._health);
+        enemy._enemy_MovementReset();
+        if (enemy._health < 1) {
+            enemy.kill();
+
+        }
+
+    }
 
     //Initializing Bullets
     _initBullets() {
@@ -85,16 +123,21 @@ class SimpleLevel extends Phaser.State {
     _fireWeapon(fireRate, damage, recoil) {
         if (this.player._energyShieldActive === false) {
             this.bullet;
+            this._damage = damage;
             this.fireRate = fireRate;
             if (this.game.time.now > this._nextFire && this.bullets.countDead() > 3) {
                 this._nextFire = this.game.time.now + this.fireRate;
                 this.bullet = this.bullets.getFirstDead();
-                this.bullet.reset(this.player.body.x + 10, this.player.body.y + 28);
-                this.game.camera.shake(0.016, 30);
                 if (this.player._playerFacingRight) {
-                    this.game.physics.arcade.velocityFromAngle(this.player._laser_pointer.angle, 1900, this.bullet.body.velocity);
+                    this.bullet.reset(this.player.body.x + 22, this.player.body.y + 26);
                 } else {
-                    this.game.physics.arcade.velocityFromAngle(this.player._laser_pointer.angle *= -1, 1400, this.bullet.body.velocity);
+                    this.bullet.reset(this.player.body.x, this.player.body.y + 28);
+                }
+                this.game.camera.shake(0.006, 30);
+                if (this.player._playerFacingRight) {
+                    this.game.physics.arcade.velocityFromAngle(this.player._laser_pointer.angle, 2400, this.bullet.body.velocity);
+                } else {
+                    this.game.physics.arcade.velocityFromAngle(this.player._laser_pointer.angle *= -1, 2400, this.bullet.body.velocity);
                 }
                 this.bullet.angle = this.player._laser_pointer.angle;
                 this.bullet.bringToTop();
@@ -103,14 +146,28 @@ class SimpleLevel extends Phaser.State {
             }
         }
     }
-    _kill_bullet(bullets, _collision_layer) {
-        this.bullet.kill();
+    _kill_bullet(bullet, _collision_layer) {
+//        this.testScorch = this.game.add.sprite(bullet.x, bullet.y, 'redPixel');
+//        this.testScorch.rotation = bullet.rotation;
+        bullet.kill();
+        //        console.log('Bullet X is ' + bullet.x + 'Bullet Y is ' + bullet.y);
+
     }
+
+
+
+
+
+
     _checkCollision() {
+            this.physics.arcade.overlap(this.bullets, this._collision_layer, this._kill_bullet, function (bullet, _collision_layer) {
+                return _collision_layer.collides;
+            }, this);
             this.game.physics.arcade.collide(this.player, this._collision_layer);
             this.game.physics.arcade.collide(this.player, this._ladder_layer);
-            this.game.physics.arcade.collide(this.bullet, this._collision_layer, this._kill_bullet, null, this);
-
+            this.game.physics.arcade.collide(this.enemies, this._collision_layer);
+            this.game.physics.arcade.collide(this.player, this.enemies, this._player_damage, null, this);
+            this.game.physics.arcade.collide(this.bullets, this.enemies, this._enemy_hit, null, this);
         }
         //public methods :
         //@override:
@@ -121,11 +178,12 @@ class SimpleLevel extends Phaser.State {
         this._loadLevel();
         this._front_layer.bringToTop();
         this._addPlayer(0, 0);
-
+        this._addEnemies();
         this.game.camera.follow(this.player);
         //Everything on _collision_layer will collide
         this._map.setCollisionBetween(0, 160, true, this._collision_layer);
         this._map.setTileIndexCallback([33, 43, 51, 61], this.player.setOnLadder, this.player, this._ladder_layer);
+
     }
     update() {
         this._positionEvaluator = this.game.input.activePointer.x + this.game.camera.x;
@@ -133,25 +191,21 @@ class SimpleLevel extends Phaser.State {
 
         //Fire Weapon RateofFire, Damage, Recoil. We eventually need to add , key here. for the bulletsprite.
         if (this.game.input.activePointer.leftButton.isDown && this.player._ladderMode === false) {
-            this._fireWeapon(90, 12, 3); //Smg Settings (90, 6, 3)
-            //this._fireWeapon(150, 30, 34); //Revolver settings. Kinda shit
+            this._fireWeapon(70, 7, 3); //Smg Settings (90, 6, 3)
+            // this._fireWeapon(110, 8, 3); //Default for plasma Rifle, for now
         }
 
 
         if (this.game.input.activePointer.rightButton.isDown && this.player._ladderMode === false) {
-            console.log('energyShieldFired');
-            this.player._energyShield.visible = true;
-            this.player._energyShieldActive = true;
+            //            console.log('energyShieldFired');
+            //            this.player._energyShield.visible = true;
+            //            this.player._energyShieldActive = true;
+            this._fireWeapon(4, 2, 3); //Smg Settings (90, 6, 3)
 
         } else {
             this.player._energyShield.visible = false;
             this.player._energyShieldActive = false;
         }
-
-
-
-
-
         this._player_position_update();
 
     }
@@ -212,6 +266,34 @@ class SimpleLevel extends Phaser.State {
     
     
     
+        _enemy_hit(bullet, enemy) {
+
+        bullet.kill();
+        enemy._health -= this._damage;
+        enemy._enemy_MovementReset();
+        if (enemy._health < 1) {
+            enemy.kill();
+                console.log('enemyHit!);
+
+            }
+        }
+
+
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -269,3 +351,13 @@ class SimpleLevel extends Phaser.State {
                 }, this);
             }
         }*/
+
+
+
+
+
+
+/*
+
+
+create() { // bullet group    APP.bullets = game.add.group();    APP.bullets.createMultiple(10, 'bullet');    APP.bullets.setAll('anchor.x', 0.5);    APP.bullets.setAll('anchor.y', 1);    // ensure that all bullets have physics, rather than setting individually    APP.bullets.enableBody = true;    APP.bullets.physicsBodyType = Phaser.Physics.ARCADE;}update(){if (APP.fireButton.isDown)        {            fireBullet();        }// Changed the overlap to check the layer against the whole group instead of// an individual global bullet reference which will keep changing.game.physics.arcade.overlap(APP.layer, APP.bullets, function(bullet, layer) {        bullet.kill();    }, null, this);}}function fireBullet() {    if (game.time.now > APP.bulletTime) {        //game.sound.play('fire');        APP.bulletTime = game.time.now + APP.bulletRate;        // Grab the first bullet we can from the pool that's dead (to ensure        // you don't accidentally grab bullets which are mid-flight)        var currentBullet = APP.bullets.getFirstDead();        if (currentBullet)        {            currentBullet.lifespan = 2000; // kill after 2000ms            if (APP.facing === "right") {                //  And fire it                currentBullet.reset(APP.player.x + 15, APP.player.y + 15);                currentBullet.body.velocity.x = APP.bulletvelocity;            }            else if (APP.facing === "left") {                currentBullet.reset(APP.player.x, APP.player.y + 15);                currentBullet.body.velocity.x = -APP.bulletvelocity;            }        }    }}*/
