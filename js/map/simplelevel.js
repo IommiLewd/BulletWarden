@@ -38,7 +38,9 @@ class SimpleLevel extends Phaser.State {
         //Nextfire var is for the gun
         this._nextFire = 0;
     }
-
+    _initInterface() {
+        this.userInterface = new userInterface(this.game);
+    }
 
     _addPlayer(x, y) {
         var playerArr = this._findObjectsByType("player", this._map, 'ObjectLayer');
@@ -88,6 +90,7 @@ class SimpleLevel extends Phaser.State {
     _player_damage(player, enemy) {
         console.log('player damage fired');
         this.game.time.events.add(Phaser.Timer.SECOND * 1, enemy._enemy_MovementReset, enemy);
+        this.userInterface._player_health -= 5;
     }
 
     _enemy_hit(bullet, enemy) {
@@ -109,7 +112,7 @@ class SimpleLevel extends Phaser.State {
             this.bullets = this.game.add.group();
             this.bullets.enableBody = true;
             this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
-            this.bullets.createMultiple(50, 'bullet');
+            this.bullets.createMultiple(500, 'bullet');
             this.bullets.setAll('checkWorldBounds', true);
             this.bullets.setAll('outOfBoundsKill', true);
             this.bullets.setAll('anchor.x', 0.5);
@@ -131,9 +134,9 @@ class SimpleLevel extends Phaser.State {
                     this.bullet.reset(this.player._gunPosition.x, this.player._gunPosition.y);
                 this.game.camera.shake(0.006, 30);
                 if (this.player._playerFacingRight) {
-                    this.game.physics.arcade.velocityFromAngle(this.player._laser_pointer.angle, 2400, this.bullet.body.velocity);
+                    this.game.physics.arcade.velocityFromAngle(this.player._laser_pointer.angle, 1100, this.bullet.body.velocity);
                 } else {
-                    this.game.physics.arcade.velocityFromAngle(this.player._laser_pointer.angle *= -1, 2400, this.bullet.body.velocity);
+                    this.game.physics.arcade.velocityFromAngle(this.player._laser_pointer.angle *= -1, 1100, this.bullet.body.velocity);
                 }
                 this.bullet.angle = this.player._laser_pointer.angle;
                 this.bullet.bringToTop();
@@ -175,6 +178,7 @@ class SimpleLevel extends Phaser.State {
         this._front_layer.bringToTop();
         this._addPlayer(0, 0);
         this._addEnemies();
+        this._initInterface();
         this.game.camera.follow(this.player);
         //Everything on _collision_layer will collide
         this._map.setCollisionBetween(0, 160, true, this._collision_layer);
@@ -187,20 +191,20 @@ class SimpleLevel extends Phaser.State {
 
         //Fire Weapon RateofFire, Damage, Recoil. We eventually need to add , key here. for the bulletsprite.
         if (this.game.input.activePointer.leftButton.isDown && this.player._ladderMode === false) {
-            this._fireWeapon(70, 7, 3); //Smg Settings (90, 6, 3)
+            this._fireWeapon(70, 3, 3); //Smg Settings (90, 6, 3)
             // this._fireWeapon(110, 8, 3); //Default for plasma Rifle, for now
         }
 
 
         if (this.game.input.activePointer.rightButton.isDown && this.player._ladderMode === false) {
-            //            console.log('energyShieldFired');
-            //            this.player._energyShield.visible = true;
-            //            this.player._energyShieldActive = true;
-            this._fireWeapon(4, 2, 3); //Smg Settings (90, 6, 3)
-
-        } else {
+            if( this.userInterface._player_energy > 5){
+            this._fireWeapon(4, 3, 3); //Smg Settings (90, 6, 3)
+            this.userInterface._energy_regen = false;
+            this.userInterface._player_energy--;
+        }} else {
             this.player._energyShield.visible = false;
             this.player._energyShieldActive = false;
+             this.userInterface._energy_regen = true;
         }
         this._player_position_update();
 

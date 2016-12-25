@@ -122,7 +122,7 @@ class Player extends Phaser.Sprite {
     }
 
     setOnLadder() {
-        if (this.x % 64 > 22 && this.x % 64 < 56) {
+        if (this.x % 64 > 22 && this.x % 64 < 42) {
         if (this.body.onFloor() === false && this._up.isDown) {
             this._ladderMode = true;
             this._laser_pointer.alpha = 0.0;
