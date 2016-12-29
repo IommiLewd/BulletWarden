@@ -4,25 +4,22 @@ class enemyGenerator extends Phaser.Sprite {
     constructor(game, x, y, tilemap, monsterType) {
         super(game, x, y, tilemap, monsterType);
         if (monsterType === undefined) {
-            monsterType = (Math.random() * 120 + 80) * (Math.random() < 0.5 ? 1 : -1);
+            var mathRandom = Math.random() * (3 - 1) + 1;
+            mathRandom = Math.round(mathRandom);
+            this.monsterType = mathRandom;
         }
-console.log(velocity);
         game.add.existing(this);
         game.physics.arcade.enable(this);
-  
         this.anchor.setTo(0.5);
         this.game.physics.arcade.enableBody(this);
         this.body.collideWorldBounds = true;
         this.body.bounce.set(1, 0);
-        this._map = game.add.tilemap('level-1');                
+        this._map = game.add.tilemap('level-1');
     }
-    _engage_Velocity() {
-        this.body.velocity.x = this.randomVelocity;
-    }
-    
-    
-// Gather all movement info, related to the pertitent type of monster under its own function. Ideally 3 functions, each denoting the behaviour of each monster.
-    
+
+
+    // Gather all movement info, related to the pertitent type of monster under its own function. Ideally 3 functions, each denoting the behaviour of each monster.
+
     _enemy_MovementReset() {
         if (this.body.x < this.horizontalCheck) {
             this.body.velocity.x = +130;
@@ -31,41 +28,36 @@ console.log(velocity);
         }
         this.body.velocity.y = 0;
     }
-    _vertical_update () {
-             this.variableMovement = Math.random() * (150 - 20) + 20;
-
-       if(this.body.y > this.heightCheck - 2) {
-           this.body.velocity.y = this.variableMovement * -1 - 20;
-       }else {
+    _vertical_update() {
+        this.variableMovement = Math.random() * (150 - 20) + 20;
+        if (this.body.y > this.heightCheck - 2) {
+            this.body.velocity.y = this.variableMovement * -1 - 20;
+        } else {
             this.body.velocity.y = this.variableMovement;
-       }
+        }
     }
-  
-    
-    _enemyHit(){
 
-        this.animations.play('damageTaken');
-           this.game.time.events.add(Phaser.Timer.SECOND * 0.15, function () {
-         this.animations.play('default');
-            }, this);
+
+    _enemyHit() {
+        console.log('EnemyHit Fired');
     }
-    
+
     update() {
-   
+
         this.heightCheck;
         this.horizontalCheck;
         if (this._playerPositionY === undefined && this._playerPositionX === undefined) {} else {
             this.heightCheck = this._playerPositionY;
             this.horizontalCheck = this._playerPositionX;
         }
-            var direction;
-            if (this.body.velocity.x > 0) {
-                this.scale.setTo(-1, 1);
-                direction = 1;
-            } else {
-                this.scale.setTo(1, 1);
-                direction = -1;
-            }
+        var direction;
+        if (this.body.velocity.x > 0) {
+            this.scale.setTo(-1, 1);
+            direction = 1;
+        } else {
+            this.scale.setTo(1, 1);
+            direction = -1;
+        }
 
     }
 }
@@ -77,11 +69,6 @@ console.log(velocity);
             this.animHandler = this.animations.play('Movement');
         }, this);
     }*/
-
-
-
-
-
 
 
 
@@ -180,12 +167,3 @@ console.log(velocity);
 
 
 */
-
-
-
-
-
-
-
-
-

@@ -24,8 +24,6 @@ class userInterface extends Phaser.Sprite {
           this._energy_pixel = this.game.add.tileSprite(12, 44, 184, 12, 'energyPixel');
         this._energy_pixel.fixedToCamera = true;
     }
-
-
     update() {
         this._energy_pixel.width  = this._player_energy / 100 * 184;
         this._health_pixel.width = this._player_health / 100 * 268;

@@ -37,6 +37,7 @@ class SimpleLevel extends Phaser.State {
         this._initBullets();
         //Nextfire var is for the gun
         this._nextFire = 0;
+        this.biteTimer = 0;
     }
     _initInterface() {
         this.userInterface = new userInterface(this.game);
@@ -90,7 +91,18 @@ class SimpleLevel extends Phaser.State {
     _player_damage(player, enemy) {
         console.log('player damage fired');
         this.game.time.events.add(Phaser.Timer.SECOND * 1, enemy._enemy_MovementReset, enemy);
-        this.userInterface._player_health -= 5;
+
+
+        if (this.time.now > this.biteTimer) {
+            this.game.camera.shake(0.06, 40);
+            this.userInterface._player_health -= 14;
+            this.biteTimer = this.time.now + 350;
+            if(this.userInterface._player_health < 0) {
+                this.userInterface._health_pixel.alpha = 0.0;
+            }
+        }
+
+
     }
 
     _enemy_hit(bullet, enemy) {
@@ -131,7 +143,7 @@ class SimpleLevel extends Phaser.State {
             if (this.game.time.now > this._nextFire && this.bullets.countDead() > 3) {
                 this._nextFire = this.game.time.now + this.fireRate;
                 this.bullet = this.bullets.getFirstDead();
-                    this.bullet.reset(this.player._gunPosition.x, this.player._gunPosition.y);
+                this.bullet.reset(this.player._gunPosition.x, this.player._gunPosition.y);
                 this.game.camera.shake(0.006, 30);
                 if (this.player._playerFacingRight) {
                     this.game.physics.arcade.velocityFromAngle(this.player._laser_pointer.angle, 1100, this.bullet.body.velocity);
@@ -146,8 +158,8 @@ class SimpleLevel extends Phaser.State {
         }
     }
     _kill_bullet(bullet, _collision_layer) {
-//        this.testScorch = this.game.add.sprite(bullet.x, bullet.y, 'redPixel');
-//        this.testScorch.rotation = bullet.rotation;
+        //        this.testScorch = this.game.add.sprite(bullet.x, bullet.y, 'redPixel');
+        //        this.testScorch.rotation = bullet.rotation;
         bullet.kill();
         //        console.log('Bullet X is ' + bullet.x + 'Bullet Y is ' + bullet.y);
 
@@ -197,14 +209,15 @@ class SimpleLevel extends Phaser.State {
 
 
         if (this.game.input.activePointer.rightButton.isDown && this.player._ladderMode === false) {
-            if( this.userInterface._player_energy > 5){
-            this._fireWeapon(4, 3, 3); //Smg Settings (90, 6, 3)
-            this.userInterface._energy_regen = false;
-            this.userInterface._player_energy--;
-        }} else {
+            if (this.userInterface._player_energy > 5) {
+                this._fireWeapon(4, 3, 3); //Smg Settings (90, 6, 3)
+                this.userInterface._energy_regen = false;
+                this.userInterface._player_energy--;
+            }
+        } else {
             this.player._energyShield.visible = false;
             this.player._energyShieldActive = false;
-             this.userInterface._energy_regen = true;
+            this.userInterface._energy_regen = true;
         }
         this._player_position_update();
 
