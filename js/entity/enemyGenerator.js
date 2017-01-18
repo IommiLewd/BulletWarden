@@ -1,3 +1,11 @@
+/*
+call with this faggot
+           var mathRandom = Math.random() * (3 - 1) + 1;
+            mathRandom = Math.round(mathRandom);
+            this.monsterType = mathRandom;
+*/
+
+
 //create constructor input, monsterType 1-3. If undefined create random number from 1-3. This number will decide the monsters sprite and behaviour.
 
 class enemyGenerator extends Phaser.Sprite {
@@ -6,7 +14,7 @@ class enemyGenerator extends Phaser.Sprite {
         if (monsterType === undefined) {
             var mathRandom = Math.random() * (3 - 1) + 1;
             mathRandom = Math.round(mathRandom);
-            this.monsterType = mathRandom;
+            monsterType = mathRandom;
         }
         game.add.existing(this);
         game.physics.arcade.enable(this);
@@ -15,6 +23,19 @@ class enemyGenerator extends Phaser.Sprite {
         this.body.collideWorldBounds = true;
         this.body.bounce.set(1, 0);
         this._map = game.add.tilemap('level-1');
+        if (monsterType === 1) {
+            //Flying Small Monster
+
+            console.log(' firing monsterType ' + monsterType);
+        }
+        if (monsterType === 2) {
+            //Standard medium monster
+            console.log(' firing monsterType ' + monsterType);
+        }
+        if (monsterType === 3) {
+            //Big Slow Monster
+            console.log(' firing monsterType ' + monsterType);
+        }
     }
 
 

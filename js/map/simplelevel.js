@@ -203,7 +203,7 @@ class SimpleLevel extends Phaser.State {
 
         //Fire Weapon RateofFire, Damage, Recoil. We eventually need to add , key here. for the bulletsprite.
         if (this.game.input.activePointer.leftButton.isDown && this.player._ladderMode === false) {
-            this._fireWeapon(70, 3, 3); //Smg Settings (90, 6, 3)
+            this._fireWeapon(140, 4, 3); //Smg Settings (90, 6, 3)
             // this._fireWeapon(110, 8, 3); //Default for plasma Rifle, for now
         }
 

@@ -21,13 +21,14 @@ class userInterface extends Phaser.Sprite {
         console.log('energyBar fired!');
         this._energyBar = this.game.add.image(4, 38, 'energyBar');
         this._energyBar.fixedToCamera = true;
-          this._energy_pixel = this.game.add.tileSprite(12, 44, 184, 12, 'energyPixel');
+        this._energy_pixel = this.game.add.tileSprite(12, 44, 184, 12, 'energyPixel');
         this._energy_pixel.fixedToCamera = true;
     }
     update() {
-        this._energy_pixel.width  = this._player_energy / 100 * 184;
+        this._energy_pixel.width = this._player_energy / 100 * 184;
         this._health_pixel.width = this._player_health / 100 * 268;
-    if(this._player_energy < 100 && this._energy_regen) {
-        this._player_energy += 0.15;
+        if (this._player_energy < 100 && this._energy_regen) {
+            this._player_energy += 0.55;
+        }
     }
-}}
+}
