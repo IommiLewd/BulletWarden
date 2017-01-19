@@ -6,11 +6,10 @@ class floatingEnemy extends Phaser.Sprite {
         if (velocity === undefined) {
             velocity = (Math.random() * 120 + 80) * (Math.random() < 0.5 ? 1 : -1);
         }
-console.log(velocity);
-   
+        console.log(velocity);
         game.add.existing(this);
         game.physics.arcade.enable(this);
-  
+
         this.anchor.setTo(0.5);
         this.game.physics.arcade.enableBody(this);
         this.body.collideWorldBounds = true;
@@ -23,20 +22,21 @@ console.log(velocity);
         this.variableTimer = 0.4;
         this.game.time.events.add(Phaser.Timer.SECOND * seededTimer, this._engage_Velocity, this);
         this.body.allowGravity = false;
-    this.game.time.events.loop(Phaser.Timer.SECOND * this.variableTimer, this._vertical_update, this);
+        this.game.time.events.loop(Phaser.Timer.SECOND * this.variableTimer, this._vertical_update, this);
         this.body.velocity.y = -90;
         this.animations.add('default', [0], 1, true);
-         this.animations.add('damageTaken', [1], 1, true);
+        this.animations.add('damageTaken', [1], 1, true);
         this.animations.play('default');
-                           
+        this._playerPositionX;
+        this._playerPositionY;
     }
     _engage_Velocity() {
         this.body.velocity.x = this.randomVelocity;
     }
-    
-    
-// Gather all movement info, related to the pertitent type of monster under its own function. Ideally 3 functions, each denoting the behaviour of each monster.
-    
+
+
+    // Gather all movement info, related to the pertitent type of monster under its own function. Ideally 3 functions, each denoting the behaviour of each monster.
+
     _enemy_MovementReset() {
         if (this.body.x < this.horizontalCheck) {
             this.body.velocity.x = +130;
@@ -45,44 +45,49 @@ console.log(velocity);
         }
         this.body.velocity.y = 0;
     }
-    _vertical_update () {
-             this.variableMovement = Math.random() * (150 - 20) + 20;
-
-       if(this.body.y > this.heightCheck - 2) {
-           this.body.velocity.y = this.variableMovement * -1 - 20;
-       }else {
+    _vertical_update() {
+        this.variableMovement = Math.random() * (150 - 20) + 20;
+        if (this.body.y > this.heightCheck - 2) {
+            this.body.velocity.y = this.variableMovement * -1 - 20;
+        } else {
             this.body.velocity.y = this.variableMovement;
-       }
-    }
-  
+        }
     
-    _enemyHit(){
+    }
 
+
+    _enemyHit() {
         this.animations.play('damageTaken');
-           this.game.time.events.add(Phaser.Timer.SECOND * 0.15, function () {
-         this.animations.play('default');
-            }, this);
+        this.game.time.events.add(Phaser.Timer.SECOND * 0.15, function () {
+            this.animations.play('default');
+        }, this);
     }
-    
+
     update() {
-   
         this.heightCheck;
         this.horizontalCheck;
         if (this._playerPositionY === undefined && this._playerPositionX === undefined) {} else {
             this.heightCheck = this._playerPositionY;
             this.horizontalCheck = this._playerPositionX;
         }
-            var direction;
-            if (this.body.velocity.x > 0) {
-                this.scale.setTo(-1, 1);
-                direction = 1;
-            } else {
-                this.scale.setTo(1, 1);
-                direction = -1;
-            }
+        var direction;
+        if (this.body.velocity.x > 0) {
+            this.scale.setTo(-1, 1);
+            direction = 1;
+        } else {
+            this.scale.setTo(1, 1);
+            direction = -1;
+        }
+
+        
+               var nextX = this.x + direction * (Math.abs(this.width) / 2 + 1);
+            var nextY = this.bottom + 1;
+            var nextTile = this._map.getTileWorldXY(nextX, nextY, 64, 64, 'CollisionLayer');
+            if (!nextTile && this.body.blocked.down && this.y > this.heightCheck - 6) {
+                this.body.velocity.x *= -1;
 
     }
-}
+} }
 
 
 /* _damage_animation() {

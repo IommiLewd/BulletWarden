@@ -8,7 +8,7 @@ call with this faggot
 
 //create constructor input, monsterType 1-3. If undefined create random number from 1-3. This number will decide the monsters sprite and behaviour.
 
-class enemyGenerator extends Phaser.Sprite {
+class floatingEnemy extends Phaser.Sprite {
     constructor(game, x, y, tilemap, monsterType) {
         super(game, x, y, tilemap, monsterType);
         if (monsterType === undefined) {
@@ -36,6 +36,7 @@ class enemyGenerator extends Phaser.Sprite {
             //Big Slow Monster
             console.log(' firing monsterType ' + monsterType);
         }
+
     }
 
 

@@ -98,24 +98,8 @@
                  "type":"enemy",
                  "visible":true,
                  "width":64,
-                 "x":341,
-                 "y":1893.33333333333
-                }, 
-                {
-                 "gid":8,
-                 "height":64,
-                 "id":32,
-                 "name":"Monster",
-                 "properties":
-                    {
-
-                    },
-                 "rotation":0,
-                 "type":"enemy",
-                 "visible":true,
-                 "width":64,
-                 "x":434,
-                 "y":1893
+                 "x":125,
+                 "y":1832.33333333333
                 }, 
                 {
                  "gid":8,
@@ -130,8 +114,8 @@
                  "type":"enemy",
                  "visible":true,
                  "width":64,
-                 "x":769,
-                 "y":1892
+                 "x":244,
+                 "y":1056
                 }, 
                 {
                  "gid":8,
@@ -146,24 +130,8 @@
                  "type":"enemy",
                  "visible":true,
                  "width":64,
-                 "x":652,
-                 "y":1891
-                }, 
-                {
-                 "gid":8,
-                 "height":64,
-                 "id":35,
-                 "name":"Monster",
-                 "properties":
-                    {
-
-                    },
-                 "rotation":0,
-                 "type":"enemy",
-                 "visible":true,
-                 "width":64,
-                 "x":568,
-                 "y":1891
+                 "x":303,
+                 "y":1643
                 }, 
                 {
                  "gid":8,
@@ -178,24 +146,8 @@
                  "type":"enemy",
                  "visible":true,
                  "width":64,
-                 "x":507,
-                 "y":1899
-                }, 
-                {
-                 "gid":8,
-                 "height":64,
-                 "id":37,
-                 "name":"Monster",
-                 "properties":
-                    {
-
-                    },
-                 "rotation":0,
-                 "type":"enemy",
-                 "visible":true,
-                 "width":64,
-                 "x":553,
-                 "y":1644
+                 "x":224,
+                 "y":1832
                 }, 
                 {
                  "gid":8,
@@ -210,24 +162,8 @@
                  "type":"enemy",
                  "visible":true,
                  "width":64,
-                 "x":698,
-                 "y":1636
-                }, 
-                {
-                 "gid":8,
-                 "height":64,
-                 "id":39,
-                 "name":"Monster",
-                 "properties":
-                    {
-
-                    },
-                 "rotation":0,
-                 "type":"enemy",
-                 "visible":true,
-                 "width":64,
-                 "x":614,
-                 "y":1636
+                 "x":866,
+                 "y":1610
                 }, 
                 {
                  "gid":8,
@@ -242,8 +178,8 @@
                  "type":"enemy",
                  "visible":true,
                  "width":64,
-                 "x":480,
-                 "y":1638
+                 "x":217,
+                 "y":1349
                 }],
          "opacity":1,
          "type":"objectgroup",

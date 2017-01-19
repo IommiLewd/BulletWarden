@@ -15,8 +15,8 @@ class Preload extends Phaser.State {
         this.load.spritesheet('Gun', 'img/rifleTileset.png', 58, 14, 4);
 
         this.load.image('monster', 'img/monsterTemplate.png');
-        // this.load.image('monsterSmall', 'img/monsterTemplateSmall.png');
-        this.load.spritesheet('monsterSmall', 'img/monsterTemplateSmallTile.png', 62, 32, 2);
+        this.load.image('monsterSmall', 'img/monsterTemplateSmall.png');
+        //this.load.spritesheet('monsterSmall', 'img/monsterTemplateSmallTile.png', 62, 32, 2);
         this.load.image('monsterBig', 'img/monsterTemplateBig.png');
 
         // Ui Files
@@ -28,12 +28,11 @@ class Preload extends Phaser.State {
 
         // js scripts :
         this.load.script('player', 'js/entity/player.js');
-        this.load.script('enemy', 'js/entity/enemy.js');
         this.load.script('simpleLevel', 'js/map/simplelevel.js');
         this.load.script('userInterface', 'js/entity/userInterface.js');
-        this.load.script('floatingEnemy', 'js/entity/floatingEnemy.js')
-
-        // json files :
+        this.load.script('BasicEnemy', 'js/entity/enemy.js');
+        this.load.script('FloatingEnemy', 'js/entity/floatingEnemy.js')
+            // json files :
         this.load.tilemap('level-1', 'json/mapOne.json', null, Phaser.Tilemap.TILED_JSON); //
     }
     create() {

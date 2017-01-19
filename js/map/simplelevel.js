@@ -55,10 +55,17 @@ class SimpleLevel extends Phaser.State {
         var enemyArr = this._findObjectsByType('enemy', this._map, 'ObjectLayer');
         //For Each element in array create Enemy Instance
         enemyArr.forEach(function (element) {
-            //this.enemy = new BasicEnemy(this.game, element.x, element.y, 'monster', undefined, this.map, 80);
-            this.enemy = new floatingEnemy(this.game, element.x, element.y, 'monsterSmall', undefined, this.map, 80);
+            var mathRandom = Math.random() * (2 - 1) + 1;
+            mathRandom = Math.round(mathRandom);
+            this.monsterType = mathRandom;
+            if (this.monsterType === 2) {
+                this.enemy = new BasicEnemy(this.game, element.x, element.y, 'monster', undefined, this.map, 80);
+                this.enemies.add(this.enemy);
+            } else {
+                this.enemy2 = new floatingEnemy(this.game, element.x, element.y, 'monsterSmall', undefined, this.map, 80);
+                this.enemies.add(this.enemy2);
+            }
 
-            this.enemies.add(this.enemy);
 
         }, this);
 
@@ -67,9 +74,10 @@ class SimpleLevel extends Phaser.State {
     _player_position_update() {
             var capturedPosition = this.player.body.y;
             var capturedPosition2 = this.player.body.x;
-            this.enemies.forEach(function (enemy, enemies, player) {
+            this.enemies.forEach(function (enemy, enemy2, enemies, player) {
                 enemy._playerPositionY = capturedPosition;
                 enemy._playerPositionX = capturedPosition2;
+
             })
             if (this.player.world.x < this._positionEvaluator) {
                 this.player._playerFacingRight = true;
@@ -91,13 +99,11 @@ class SimpleLevel extends Phaser.State {
     _player_damage(player, enemy) {
         console.log('player damage fired');
         this.game.time.events.add(Phaser.Timer.SECOND * 1, enemy._enemy_MovementReset, enemy);
-
-
         if (this.time.now > this.biteTimer) {
             this.game.camera.shake(0.06, 40);
             this.userInterface._player_health -= 14;
             this.biteTimer = this.time.now + 350;
-            if(this.userInterface._player_health < 0) {
+            if (this.userInterface._player_health < 0) {
                 this.userInterface._health_pixel.alpha = 0.0;
             }
         }
@@ -108,7 +114,7 @@ class SimpleLevel extends Phaser.State {
     _enemy_hit(bullet, enemy) {
         console.log('enemyHit!');
         bullet.kill();
-        enemy._enemyHit();
+        //enemy._enemyHit();
         enemy._health -= this._damage;
         console.log('enemy health is ' + enemy._health);
         enemy._enemy_MovementReset();
