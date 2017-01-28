@@ -20,14 +20,15 @@
     },
     "webkit": {},
     "window": {
-        "frame": true,
-        "height": 560,
+        "frame": false,
+        "height": 562,
         "id": "BulletWarden",
-        "max_height": 560,
-        "max_width": 840,
-        "min_height": 560,
-        "min_width": 840,
+        "kiosk_emulation": true,
+        "max_height": 562,
+        "max_width": 842,
+        "min_height": 562,
+        "min_width": 842,
         "title": "BulletWarden",
-        "width": 840
+        "width": 842
     }
 }

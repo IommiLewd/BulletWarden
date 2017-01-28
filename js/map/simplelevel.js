@@ -55,18 +55,19 @@ class SimpleLevel extends Phaser.State {
         var enemyArr = this._findObjectsByType('enemy', this._map, 'ObjectLayer');
         //For Each element in array create Enemy Instance
         enemyArr.forEach(function (element) {
-            var mathRandom = Math.random() * (2 - 1) + 1;
+            var mathRandom = Math.random() * (3 - 1) + 1;
             mathRandom = Math.round(mathRandom);
             this.monsterType = mathRandom;
-            if (this.monsterType === 2) {
-                this.enemy = new BasicEnemy(this.game, element.x, element.y, 'monster', undefined, this.map, 80);
+            if (this.monsterType === 1) {
+                this.enemy = new BasicEnemy(this.game, element.x, element.y, 'monster', undefined, this.map, 70);
                 this.enemies.add(this.enemy);
-            } else {
-                this.enemy2 = new floatingEnemy(this.game, element.x, element.y, 'monsterSmall', undefined, this.map, 80);
+            } else if (this.monsterType === 2) {
+                this.enemy2 = new floatingEnemy(this.game, element.x, element.y, 'monsterSmall', undefined, this.map, 100);
                 this.enemies.add(this.enemy2);
+            } else {
+                            this.enemy3 = new BasicEnemy(this.game, element.x, element.y, 'monsterBig', undefined, this.map, 190);
+                this.enemies.add(this.enemy3);
             }
-
-
         }, this);
 
     }
@@ -116,6 +117,7 @@ class SimpleLevel extends Phaser.State {
         bullet.kill();
         //enemy._enemyHit();
         enemy._health -= this._damage;
+        enemy.body.velocity.y = 0;
         console.log('enemy health is ' + enemy._health);
         enemy._enemy_MovementReset();
         if (enemy._health < 1) {

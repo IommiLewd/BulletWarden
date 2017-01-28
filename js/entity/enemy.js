@@ -11,7 +11,7 @@ class BasicEnemy extends Phaser.Sprite {
         this.game.physics.arcade.enableBody(this);
         this.body.collideWorldBounds = true;
         this.body.bounce.set(1, 0);
-        this._health = 80;
+        this._health = health;
         this._map = game.add.tilemap('level-1');
         this.randomVelocity = velocity;
         this._player_Spotted = true;

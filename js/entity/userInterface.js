@@ -28,7 +28,7 @@ class userInterface extends Phaser.Sprite {
         this._energy_pixel.width = this._player_energy / 100 * 184;
         this._health_pixel.width = this._player_health / 100 * 268;
         if (this._player_energy < 100 && this._energy_regen) {
-            this._player_energy += 0.55;
+            this._player_energy += 0.25;
         }
     }
 }
